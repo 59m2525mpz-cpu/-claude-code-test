@@ -1,0 +1,2517 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Abi-Rechner</title>
+<meta name="description" content="Abi-Rechner für das Abitur 2028 in NRW">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161a22" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Abi-Rechner">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&display=swap">
+</head>
+<body>
+<style>
+:root {
+  /* Layout: App-Rahmen. Ab 900 px Seitenleiste links, darunter feste Tab-Leiste unten. Titel und Inhalt teilen eine 1120-px-Spalte mit einer linken Kante.
+     Übersicht ab 1100 px zweispaltig: 7fr + 16 + 5fr (644 + 16 + 460 = 1120). Noten ab 1100 px: Liste 1fr + 16 + Detail 400. */
+  --bg: #f1f3f6;
+  --surface: #ffffff;
+  --field: #f3f5f8;
+  --active: #e9ecf1;
+  --seg-track: #e5e8ed;
+  --seg-on: #ffffff;
+  --ink: #14171d;
+  --ink-2: #434a57;
+  --ink-3: #5f6673;
+  --line: #e3e6eb;
+  --line-2: #cdd2da;
+  --accent: #2747c8;
+  --accent-ink: #1f3aa8;
+  --accent-soft: #e8ecfb;
+  --on-accent: #ffffff;
+  --good: #16794c;
+  --good-soft: #e1f2e8;
+  --bad: #c42f2c;
+  --bad-soft: #fbe8e7;
+  --knob: 0 1px 3px rgba(20, 23, 29, 0.16);
+  --float: 0 10px 40px rgba(20, 23, 29, 0.18);
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-fig: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* nur h1 und Leitzahlen */
+  --fs-11: 11px; --fs-13: 13px; --fs-15: 15px; --fs-17: 17px; --fs-20: 20px; --fs-24: 24px; --fs-40: 40px;
+  --r: 16px; --r-s: 12px; --r-xs: 8px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0f14; --surface: #161a22; --field: #1e232d; --active: #262c38; --seg-track: #1e232d; --seg-on: #353c4b;
+    --ink: #eef1f6; --ink-2: #b8bfcc; --ink-3: #8a92a1; --line: #252b36; --line-2: #384152;
+    --accent: #6ea8ff; --accent-ink: #9cc3ff; --accent-soft: #16264a; --on-accent: #0c0f14;
+    --good: #4cc48d; --good-soft: #12301f; --bad: #ff7d77; --bad-soft: #3a1c1d;
+    --knob: 0 1px 3px rgba(0, 0, 0, 0.5); --float: 0 10px 40px rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c0f14; --surface: #161a22; --field: #1e232d; --active: #262c38; --seg-track: #1e232d; --seg-on: #353c4b;
+  --ink: #eef1f6; --ink-2: #b8bfcc; --ink-3: #8a92a1; --line: #252b36; --line-2: #384152;
+  --accent: #6ea8ff; --accent-ink: #9cc3ff; --accent-soft: #16264a; --on-accent: #0c0f14;
+  --good: #4cc48d; --good-soft: #12301f; --bad: #ff7d77; --bad-soft: #3a1c1d;
+  --knob: 0 1px 3px rgba(0, 0, 0, 0.5); --float: 0 10px 40px rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font: 400 var(--fs-15)/1.45 var(--font-ui); -webkit-font-smoothing: antialiased; caret-color: var(--accent); accent-color: var(--accent); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); }
+::selection { background: var(--accent-soft); color: var(--ink); }
+button, input, select { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+svg.i.s { width: 18px; height: 18px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Rahmen ---------- */
+.side { display: none; }
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px));
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.tb-in { display: flex; align-items: center; gap: 4px; height: 52px; }
+.topbar h1 { font: 700 var(--fs-20)/1 var(--font-fig); font-stretch: 108%; letter-spacing: -0.01em; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--r-xs); background: transparent; font-size: var(--fs-13); color: var(--ink-3); white-space: nowrap; cursor: pointer; }
+.status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); flex: none; }
+.status[data-kind="ok"] .dot { background: var(--good); }
+.status[data-kind="busy"] .dot { background: var(--accent); }
+.status[data-kind="warn"] .dot { background: var(--bad); }
+.status[data-kind="warn"] { color: var(--bad); font-weight: 600; }
+.iconbtn { display: inline-grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-s); border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+.iconbtn:disabled { opacity: 0.35; cursor: default; }
+.main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 88px; }
+.wrap { width: 100%; max-width: 1120px; margin-inline: auto; }
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  background: var(--surface); border-top: 1px solid var(--line);
+}
+.tabbar button { display: grid; justify-items: center; align-content: center; gap: 2px; min-height: 52px; padding: 2px 0; border: 0; background: transparent; color: var(--ink-3); font-size: var(--fs-11); font-weight: 600; cursor: pointer; min-width: 0; }
+.tabbar button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tabbar button[aria-current="page"] { color: var(--accent); }
+@media (min-width: 900px) {
+  .app { display: grid; grid-template-columns: 236px minmax(0, 1fr); }
+  .side {
+    display: flex; flex-direction: column; gap: 22px; position: sticky; top: 0; height: 100vh;
+    padding-block: 22px 20px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 14px;
+    background: var(--surface); border-right: 1px solid var(--line);
+  }
+  .tabbar, .topbar .iconbtn { display: none; }
+  .topbar { padding-left: 32px; padding-right: 32px; background: var(--bg); border-bottom: 0; }
+  .tb-in { height: 68px; max-width: 1120px; margin-inline: auto; }
+  .topbar h1 { font-size: var(--fs-24); }
+  .main { padding-left: 32px; padding-right: 32px; padding-block: 4px 48px; }
+}
+.brand { display: flex; align-items: center; gap: 10px; padding-left: 6px; }
+.brand .mark { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); font: 700 var(--fs-20)/1 var(--font-fig); }
+.brand strong { display: block; font: 700 var(--fs-17)/1.1 var(--font-fig); font-stretch: 108%; }
+.brand small { display: block; font-size: var(--fs-13); color: var(--ink-3); margin-top: 2px; }
+.snav { display: grid; gap: 2px; }
+.snav button { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: var(--ink-2); font-weight: 600; font-size: var(--fs-15); cursor: pointer; text-align: left; }
+.snav button[aria-current="page"] { background: var(--active); color: var(--ink); }
+.snav.end { margin-top: auto; }
+.side .who { font-size: var(--fs-13); color: var(--ink-3); padding: 0 10px; line-height: 1.5; }
+
+/* ---------- Grundbausteine ---------- */
+.screen { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; min-width: 0; align-content: start; }
+@media (min-width: 900px) { .card { padding: 20px; } }
+.card h2, .chead h2 { font: 600 var(--fs-17)/1.3 var(--font-ui); }
+.chead { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 24px; }
+.sec-h { font: 600 var(--fs-13)/1.3 var(--font-ui); color: var(--ink-2); padding: 8px 4px 0; }
+.help { font-size: var(--fs-13); color: var(--ink-3); line-height: 1.45; max-width: 65ch; }
+.warnline { font-size: var(--fs-13); color: var(--bad); font-weight: 600; }
+.label { font: 600 var(--fs-13)/1.3 var(--font-ui); color: var(--ink-2); }
+.meta { font-size: var(--fs-13); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.meta strong { color: var(--ink); }
+.ok-t { color: var(--good); }
+.bad-t { color: var(--bad); }
+.nw { white-space: nowrap; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: var(--r-s); border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font-weight: 600; font-size: var(--fs-15); cursor: pointer; transition: transform 140ms var(--ease-out), background-color 140ms ease; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
+.btn.link { padding: 0; border: 0; background: none; color: var(--ink); justify-self: start; gap: 2px; }
+.btn.link svg { color: var(--ink-3); }
+.btn.sm { min-height: 36px; padding: 0 12px; font-size: var(--fs-13); }
+.btn.link.sm { min-height: 44px; padding: 0; }
+
+/* Druck-Rückmeldung: kurz, nur transform */
+.iconbtn, .stepper button, .tchip { transition: transform 140ms var(--ease-out), background-color 140ms ease; }
+.btn:active, .iconbtn:active:not(:disabled), .stepper button:active:not(:disabled), .tchip:active { transform: scale(0.97); }
+.row:active, .trow:active { background: var(--field); }
+@media (hover: hover) and (pointer: fine) {
+  .row:hover, .trow:hover, .snav button:hover:not([aria-current]), .iconbtn:hover:not(:disabled), .status:hover, details.prog > summary:hover { background: var(--field); }
+  .btn:not(.primary):not(.link):hover { background-color: var(--field); }
+  .btn.primary:hover { background-color: var(--accent-ink); border-color: var(--accent-ink); }
+  .btn.link:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+}
+
+/* Segment-Schalter mit gleitender Auswahl */
+.seg { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 2px; padding: 3px; border-radius: var(--r-s); background: var(--seg-track); }
+.seg-ind { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px - (var(--n, 2) - 1) * 2px) / var(--n, 2)); border-radius: 9px; background: var(--seg-on); box-shadow: var(--knob); transform: translateX(calc(var(--i, 0) * (100% + 2px))); transition: transform 180ms var(--ease-out); }
+.seg button { position: relative; z-index: 1; border: 0; border-radius: 9px; background: transparent; color: var(--ink-2); min-height: 40px; padding: 0 4px; font-size: var(--fs-15); font-weight: 600; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; }
+.seg button[aria-selected="true"], .seg button[aria-pressed="true"] { color: var(--ink); }
+.seg .now { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+@media (min-width: 480px) { .seg { justify-self: start; width: max-content; } .seg button { min-height: 36px; padding: 0 18px; } }
+
+/* Listen */
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.list > li { position: relative; }
+.list > li + li::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: var(--line); z-index: 1; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto 18px; gap: 12px; align-items: center; width: 100%; min-height: 60px; padding: 10px 12px 10px 16px; border: 0; background: transparent; text-align: left; cursor: pointer; color: var(--ink); transition: background-color 120ms ease; }
+.row:focus-visible, .trow:focus-visible { outline-offset: -2px; }
+.row[aria-current="true"] { background: var(--active); }
+.row .rl { display: grid; gap: 3px; min-width: 0; }
+.row .t { font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.row .g { font-size: var(--fs-13); color: var(--ink-2); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.row .g .miss { color: var(--bad); font-weight: 600; }
+.row .rr { display: grid; justify-items: end; gap: 1px; }
+.row > svg { color: var(--ink-3); }
+.val { font: 600 var(--fs-17)/1.2 var(--font-ui); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.val.fin { font-weight: 700; }
+.ap { color: var(--ink-3); font-weight: 400; margin-right: 3px; }
+.muted { color: var(--ink-3); }
+.st { font-size: var(--fs-13); color: var(--ink-3); white-space: nowrap; }
+.st.out { color: var(--bad); font-weight: 600; }
+.st.fin { color: var(--ink-2); }
+.b { flex: none; font-size: var(--fs-11); font-weight: 600; line-height: 1.6; padding: 0 6px; border-radius: 6px; background: var(--field); color: var(--ink-2); white-space: nowrap; }
+.b.lk { background: var(--active); color: var(--ink); }
+
+/* Eingabezeilen (Abitur, Prognosen) */
+.frow { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "fl fr" "ff ff"; gap: 10px 12px; align-items: center; padding: 12px 16px; }
+.frow .fl { grid-area: fl; display: grid; gap: 2px; min-width: 0; }
+.frow .fl .t { font-weight: 600; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.frow .fl .s { font-size: var(--fs-13); color: var(--ink-3); }
+.frow .ff { grid-area: ff; display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+.frow .fr { grid-area: fr; display: grid; justify-items: end; gap: 1px; }
+.frow .ferr { grid-column: 1 / -1; }
+@media (min-width: 620px) { .frow { grid-template-columns: minmax(0, 1fr) auto minmax(84px, auto); grid-template-areas: "fl ff fr"; } }
+
+/* Notenfelder */
+.f { display: grid; gap: 6px; min-width: 0; }
+.f > span { font-size: var(--fs-13); color: var(--ink-3); white-space: nowrap; }
+.f input { width: 100%; height: 48px; text-align: center; font: 600 var(--fs-17) var(--font-ui); font-variant-numeric: tabular-nums; color: var(--ink); background: var(--field); border: 1px solid transparent; border-radius: var(--r-s); padding: 0 4px; transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease; }
+.frow .f input { width: 64px; height: 44px; }
+.frow .f.date input, .f.date input { width: 100%; min-width: 0; text-align: left; padding: 0 12px; font-weight: 500; }
+.frow .f.date input { width: 168px; }
+.f input::placeholder { color: var(--ink-3); }
+.f input:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
+.f input.has { background: var(--surface); border-color: var(--line-2); }
+.f input.rng { font-size: var(--fs-15); letter-spacing: -0.02em; }
+.f input.bad { border-color: var(--bad); background: var(--bad-soft); }
+.f.z input { background: transparent; border: 1px dashed var(--line-2); }
+.f.z input.has { border: 1.5px solid var(--ink); background: var(--surface); }
+.f.z input:focus { border-style: solid; border-color: var(--accent); }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 10px; }
+.tgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.zline { display: grid; grid-template-columns: 88px 88px minmax(0, 1fr); gap: 10px; align-items: end; }
+.zline.one { grid-template-columns: 96px minmax(0, 1fr); }
+.zline .help { padding-bottom: 6px; }
+.fg { display: grid; gap: 8px; }
+.ferr { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: var(--fs-13); color: var(--bad); font-weight: 600; }
+
+/* ---------- Übersicht ---------- */
+.ov { display: grid; gap: 16px; }
+.ov-a, .ov-b { display: contents; }
+.ov .hero { order: 1; } #ovTermine { order: 2; } .ov .duo { order: 3; } #ovSzen { order: 4; } #ovVerlauf { order: 5; }
+@media (min-width: 1100px) {
+  .ov { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
+  .ov-a, .ov-b { display: grid; gap: 16px; align-content: start; min-width: 0; }
+  #ovVerlauf { grid-column: 1 / -1; }
+}
+.hero { gap: 4px; padding: 18px; }
+@media (min-width: 900px) { .hero { padding: 22px; } }
+.hero-num { justify-self: start; margin-top: 10px; font: 700 var(--fs-40)/1 var(--font-fig); font-stretch: 112%; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.hero-num.fail { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 3px; }
+.words { justify-self: start; font-size: var(--fs-13); color: var(--ink-3); }
+.hero .pts { justify-self: start; font-size: var(--fs-15); color: var(--ink-2); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.scale { position: relative; height: 56px; margin-top: 10px; }
+.scale .track { position: absolute; left: 0; right: 0; top: 22px; height: 8px; border-radius: 4px; background: var(--field); box-shadow: inset 0 0 0 1px var(--line); }
+.scale .tick { position: absolute; top: 22px; width: 1px; height: 8px; background: var(--line-2); }
+.scale .band { position: absolute; top: 22px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.scale .dot { position: absolute; top: 18px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--accent); border: 3px solid var(--surface); box-shadow: var(--knob); }
+.scale .goal { position: absolute; top: 16px; width: 2px; height: 20px; margin-left: -1px; border-radius: 1px; background: var(--ink); }
+.scale .goal span { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); font-size: var(--fs-11); font-weight: 600; color: var(--ink); white-space: nowrap; }
+.scale .goal.l span { left: 0; transform: none; }
+.scale .goal.r span { left: auto; right: 0; transform: none; }
+.scale .sl { position: absolute; top: 37px; transform: translateX(-50%); font-size: var(--fs-11); color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.scale .sl.bv { color: var(--ink); font-weight: 600; }
+.scale .sl.l { transform: none; }
+.scale .sl.r { transform: translateX(-100%); }
+.konto { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); font-size: var(--fs-13); }
+.konto .kl { color: var(--ink-2); }
+.konto .kl b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.konto .cells { display: inline-flex; gap: 4px; }
+.konto .cell { width: 18px; height: 10px; border-radius: 3px; background: var(--field); box-shadow: inset 0 0 0 1px var(--line-2); }
+.konto .cell.on { background: var(--ink-2); box-shadow: none; }
+.konto .cell.lk { background: var(--ink); box-shadow: none; }
+.konto .cell.over { background: var(--bad); box-shadow: none; }
+.konto .ks { font-weight: 600; }
+.konto.big { margin-top: 0; padding-top: 0; border-top: 0; gap: 10px 16px; font-size: var(--fs-15); }
+.konto.big .cell { width: 28px; height: 14px; border-radius: 4px; }
+.duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 359px) { .duo { grid-template-columns: minmax(0, 1fr); } }
+.duo .card { gap: 4px; }
+.stat { justify-self: start; margin-top: 4px; font: 700 var(--fs-24)/1.15 var(--font-fig); font-stretch: 108%; font-variant-numeric: tabular-nums; }
+.stat .u { font: 400 var(--fs-13) var(--font-ui); color: var(--ink-3); margin-left: 4px; }
+.duo .btn.link { margin-top: 2px; }
+.tlist { list-style: none; margin: 0 -16px; padding: 0; }
+@media (min-width: 900px) { .tlist { margin: 0 -20px; } }
+.tlist li { position: relative; }
+.tlist li + li::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: var(--line); }
+.trow { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; min-height: 58px; padding: 8px 16px; border: 0; background: transparent; text-align: left; cursor: pointer; color: var(--ink); transition: background-color 120ms ease; }
+@media (min-width: 900px) { .trow { padding-inline: 20px; } }
+.trow .td { display: grid; justify-items: center; line-height: 1.1; padding: 4px 0; border-radius: 10px; background: var(--field); }
+.trow .td b { font-size: var(--fs-17); font-variant-numeric: tabular-nums; }
+.trow .td span { font-size: var(--fs-11); color: var(--ink-2); }
+.trow .tt { display: grid; gap: 2px; min-width: 0; }
+.trow .tt strong { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trow .tt span { font-size: var(--fs-13); color: var(--ink-3); }
+.trow .tr { font-size: var(--fs-13); color: var(--ink-2); white-space: nowrap; }
+.trow .tr.soon { color: var(--ink); font-weight: 600; }
+.trow .tr.miss { color: var(--bad); font-weight: 600; }
+.cmp { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.cmp th, .cmp td { padding: 8px 4px; border-top: 1px solid var(--line); text-align: right; font-size: var(--fs-15); }
+.cmp thead th { border-top: 0; font-size: var(--fs-13); font-weight: 600; color: var(--ink-3); padding-top: 0; }
+.cmp tbody th { text-align: left; font-weight: 400; color: var(--ink-2); }
+.cmp td { font-weight: 600; }
+.cmp .mid { color: var(--accent-ink); }
+.cmp .fail { color: var(--ink-3); text-decoration: line-through; }
+.cmp tr.big td { font-size: var(--fs-17); font-weight: 700; }
+
+/* Verlauf */
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart .ax { fill: var(--ink-3); font: 400 var(--fs-11) var(--font-ui); }
+.chart .gl { stroke: var(--line); stroke-width: 1; }
+.chart .tl { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 4 3; }
+.chart .tlab { fill: var(--ink-2); font: 600 var(--fs-11) var(--font-ui); }
+.chart .ar { fill: var(--accent); opacity: 0.1; }
+.chart .ln { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .mk { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.chart .elab { fill: var(--ink); font: 700 var(--fs-13) var(--font-ui); }
+.chart .xh { stroke: var(--ink-3); stroke-width: 1; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line-2); border-radius: 10px; padding: 7px 10px; font-size: var(--fs-13); color: var(--ink-2); box-shadow: var(--knob); white-space: nowrap; z-index: 2; }
+.tip strong { display: block; font-size: var(--fs-15); color: var(--ink); }
+.empty { position: absolute; inset: 20px 12px auto; text-align: center; font-size: var(--fs-13); color: var(--ink-2); background: var(--surface); padding: 12px; border-radius: 10px; border: 1px dashed var(--line-2); }
+
+/* ---------- Noten: Liste und Detail ---------- */
+.md { display: grid; gap: 16px; }
+.pane { display: none; }
+@media (min-width: 1100px) {
+  .md.haspane { grid-template-columns: minmax(0, 1fr) 400px; align-items: start; }
+  .md.haspane .pane { display: block; position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+}
+
+/* ---------- Planung ---------- */
+.zhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.stepper { display: inline-flex; align-items: center; background: var(--field); border-radius: var(--r-s); padding: 2px; }
+.stepper button { width: 44px; height: 40px; border: 0; border-radius: 10px; background: transparent; font-size: var(--fs-20); font-weight: 500; color: var(--accent-ink); cursor: pointer; }
+.stepper button:disabled { color: var(--ink-3); opacity: 0.5; cursor: default; }
+.stepper output { min-width: 56px; text-align: center; font: 700 var(--fs-20) var(--font-ui); font-variant-numeric: tabular-nums; }
+.zbig { font-size: var(--fs-15); color: var(--ink-2); }
+.zbig strong { font-size: var(--fs-20); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.zrows { display: grid; }
+.zrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--line); align-items: center; }
+.zrow .zl { font-size: var(--fs-13); color: var(--ink-2); }
+.zrow .zv { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.zrow .zw { grid-column: 1 / -1; font-size: var(--fs-13); color: var(--bad); font-weight: 600; }
+.note { font-size: var(--fs-13); color: var(--ink-2); }
+.note strong { color: var(--ink); }
+.bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bars li { display: grid; grid-template-columns: 96px minmax(0, 1fr) 54px; gap: 10px; align-items: center; font-size: var(--fs-13); }
+.bars .bl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.bars .bt { height: 10px; position: relative; background: var(--field); border-radius: 5px; overflow: hidden; }
+.bars .bf { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 5px; min-width: 2px; }
+.bars .bv { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bars li.zero .bl, .bars li.zero .bv { color: var(--ink-3); }
+.scale-note { font-size: var(--fs-13); color: var(--ink-3); line-height: 1.6; padding: 0 4px; }
+
+/* ---------- Einzelnoten ---------- */
+.ntools { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: end; }
+.ntools .btn { grid-column: 1 / -1; }
+@media (min-width: 620px) { .ntools { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; } .ntools .btn { grid-column: auto; } }
+.sel { display: grid; gap: 6px; font-size: var(--fs-13); color: var(--ink-3); min-width: 0; }
+.sel select, .sfield input, .sfield select { width: 100%; height: 44px; padding: 0 12px; border-radius: var(--r-s); border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font-size: 16px; min-width: 0; }
+.loggroups { display: grid; gap: 16px; }
+.lg-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.lg-h span { font-size: var(--fs-13); color: var(--ink-3); font-weight: 400; }
+.nrow { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto 44px; gap: 10px; align-items: center; padding: 6px 6px 6px 16px; min-height: 56px; }
+.nrow .ld { font-size: var(--fs-13); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.nrow .lt { overflow-wrap: anywhere; }
+.nrow .lt.none { color: var(--ink-3); font-style: italic; }
+.nrow .lp { text-align: right; white-space: nowrap; }
+.nrow .lp small { display: block; font-size: var(--fs-11); color: var(--ink-3); }
+.empty-box { font-size: var(--fs-15); color: var(--ink-2); padding: 18px 16px; border: 1px dashed var(--line-2); border-radius: var(--r); text-align: center; }
+
+/* ---------- Kursbogen ---------- */
+.tscroll { overflow-x: auto; margin: 0 -16px; padding: 0 16px; }
+@media (min-width: 900px) { .tscroll { margin: 0 -20px; padding: 0 20px; } }
+.bogen { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.bogen th, .bogen td { padding: 9px 6px; border-bottom: 1px solid var(--line); text-align: center; font-size: var(--fs-15); white-space: nowrap; }
+.bogen thead th { font-size: var(--fs-13); font-weight: 600; color: var(--ink-3); padding-top: 2px; }
+.bogen th:first-child, .bogen td:first-child { text-align: left; padding-left: 0; }
+.bogen tbody th { font-weight: 400; }
+.bogen tbody tr:last-child th, .bogen tbody tr:last-child td { border-bottom: 0; }
+.bogen td.fin { font-weight: 700; }
+.bogen td.prog { color: var(--ink-3); font-style: italic; }
+.bogen td.na, .bogen td.cut { color: var(--ink-3); }
+.dv { text-decoration: underline; text-decoration-color: var(--bad); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.zul { gap: 16px; }
+.strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); margin: 0 -16px -16px; border-top: 1px solid var(--line); border-radius: 0 0 var(--r) var(--r); overflow: hidden; }
+@media (min-width: 620px) { .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .strip { margin: 0 -20px -20px; } }
+.strip > div { display: grid; gap: 2px; padding: 12px 16px; background: var(--surface); }
+.strip span { font-size: var(--fs-13); color: var(--ink-3); }
+.strip strong { font-size: var(--fs-17); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.legend { font-size: var(--fs-13); color: var(--ink-3); line-height: 1.7; padding: 0 4px; }
+
+/* ---------- Einstellungen ---------- */
+.srow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 8px 14px 8px 16px; }
+.srow > label, .srow > span:first-child { flex: 1; min-width: 0; }
+.srow select { height: 40px; max-width: 58%; padding: 0 8px; border-radius: var(--r-xs); border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font-size: 16px; }
+.srow .sv { color: var(--ink-3); font-size: var(--fs-15); text-align: right; }
+.srow .sv.bad-t { color: var(--bad); }
+.sw { appearance: none; -webkit-appearance: none; flex: none; width: 48px; height: 30px; border-radius: 15px; background: var(--line-2); position: relative; cursor: pointer; margin: 0; transition: background-color 160ms var(--ease-out); }
+.sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--seg-on); box-shadow: var(--knob); transition: transform 160ms var(--ease-out); }
+.sw:checked { background: var(--good); }
+.sw:checked::after { transform: translateX(18px); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px 14px 16px; }
+.tchip { position: relative; display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2); font-size: var(--fs-15); font-weight: 500; cursor: pointer; }
+.tchip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.tchip:has(input:checked) { background: var(--active); border-color: transparent; color: var(--ink); font-weight: 600; }
+.tchip:has(input:disabled) { opacity: 0.6; cursor: default; }
+.tchip:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.resetbox { display: grid; gap: 10px; padding: 14px 16px; }
+.resetbox .btn { justify-self: start; }
+.rules { font-size: var(--fs-13); color: var(--ink-3); line-height: 1.6; padding: 0 4px; max-width: 75ch; }
+
+/* ---------- Fach-Detail (Sheet und Spalte) ---------- */
+.sh-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 10px 6px 10px 16px; border-bottom: 1px solid var(--line); }
+.sh-title { min-width: 0; padding-top: 8px; }
+.sh-title h2 { font: 700 var(--fs-20)/1.15 var(--font-fig); font-stretch: 106%; }
+.sh-title p { font-size: var(--fs-13); color: var(--ink-3); margin-top: 3px; }
+.sh-btns { display: flex; gap: 0; }
+.sh-body { display: grid; gap: 16px; align-content: start; padding: 16px; }
+.pane .sh-head { padding: 12px 8px 12px 20px; }
+.pane .sh-body { padding: 18px 20px 22px; }
+.sh-sec { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sh-sec h3 { font-size: var(--fs-15); font-weight: 600; }
+.res { background: var(--field); border-radius: var(--r-s); padding: 12px 14px; display: grid; gap: 3px; transition: background-color 400ms ease-out; }
+.res.pulse { background: var(--accent-soft); transition-duration: 0s; }
+.res-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.res-top span { font-size: var(--fs-13); color: var(--ink-2); font-weight: 600; }
+.res-top strong { font: 700 var(--fs-24)/1.1 var(--font-fig); font-variant-numeric: tabular-nums; }
+.res-meta { font-size: var(--fs-13); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.res-inc { font-size: var(--fs-13); font-weight: 600; }
+.res-inc.ok { color: var(--good); }
+.res-inc.out { color: var(--bad); }
+details.prog { padding-top: 6px; }
+details.prog > summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 44px; margin: 0 -8px; padding: 0 8px; border-radius: var(--r-xs); cursor: pointer; font-size: var(--fs-15); font-weight: 600; }
+details.prog > summary::-webkit-details-marker { display: none; }
+details.prog > summary .sv { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-2); font-weight: 400; font-variant-numeric: tabular-nums; }
+details.prog > summary svg { color: var(--ink-3); transition: transform 160ms var(--ease-out); }
+details.prog[open] > summary svg { transform: rotate(90deg); }
+details.prog .fg { padding-top: 6px; }
+.mini { list-style: none; margin: 0; padding: 0; display: grid; }
+.mini li { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-15); }
+.mini li span:first-child { color: var(--ink-3); font-size: var(--fs-13); font-variant-numeric: tabular-nums; padding-top: 1px; }
+.mini li span:nth-child(2) { overflow-wrap: anywhere; min-width: 0; }
+.mini li strong { font-variant-numeric: tabular-nums; }
+.sh-sec .btn { justify-self: start; }
+.nform { display: grid; gap: 14px; }
+.sfield { display: grid; gap: 6px; font-size: var(--fs-13); color: var(--ink-2); font-weight: 600; }
+.sfield input.bad { border-color: var(--bad); background: var(--bad-soft); }
+.formerr { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: var(--fs-13); color: var(--bad); font-weight: 600; }
+.sh-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 4px; }
+
+/* ---------- Sheet: Handy unten, Desktop rechts ---------- */
+dialog.sheet { border: 0; padding: 0; margin: auto 0 0; inset: 0; width: 100%; max-width: none; max-height: 90vh; max-height: 90dvh; background: var(--surface); color: var(--ink); border-radius: 20px 20px 0 0; box-shadow: var(--float); overflow: hidden; transform: none; transition: transform 280ms var(--ease-drawer); }
+dialog.sheet::backdrop { background: rgba(8, 10, 16, 0.42); transition: opacity 200ms ease-out; }
+dialog.sheet.closing { transform: translateY(100%); transition: transform 200ms var(--ease-out); }
+dialog.sheet.closing::backdrop { opacity: 0; }
+@starting-style { dialog.sheet[open] { transform: translateY(100%); } dialog.sheet[open]::backdrop { opacity: 0; } }
+.shwrap { display: flex; flex-direction: column; max-height: 90vh; max-height: 90dvh; }
+.shwrap > .sh-head { flex: none; padding-right: max(6px, env(safe-area-inset-right, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); touch-action: none; }
+.shwrap > .sh-body { min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.sh-grab { flex: none; height: 22px; display: grid; place-items: center; touch-action: none; cursor: grab; }
+.sh-grab::before { content: ""; width: 38px; height: 5px; border-radius: 3px; background: var(--line-2); }
+@media (min-width: 900px) {
+  dialog.sheet { margin: 0 0 0 auto; width: 440px; height: 100%; max-height: none; border-radius: 0; }
+  dialog.sheet.closing { transform: translateX(100%); }
+  @starting-style { dialog.sheet[open] { transform: translateX(100%); } }
+  .shwrap { height: 100%; max-height: none; }
+  .sh-grab { display: none; }
+  .shwrap > .sh-head { padding: 18px 12px 14px 22px; touch-action: auto; }
+  .shwrap > .sh-body { padding: 18px 22px 28px; }
+}
+
+/* ---------- Toast ---------- */
+.toast { position: fixed; inset: auto auto calc(80px + env(safe-area-inset-bottom, 0px)) 50%; margin: 0; border: 0; overflow: visible; z-index: 40; display: flex; align-items: center; gap: 10px; width: max-content; max-width: calc(100vw - 32px); background: var(--ink); color: var(--bg); font-size: var(--fs-15); font-weight: 600; padding: 6px 6px 6px 16px; border-radius: 999px; box-shadow: var(--float); opacity: 0; visibility: hidden; transform: translate(-50%, 16px); pointer-events: none; transition: opacity 160ms ease, transform 160ms var(--ease-out), visibility 0s linear 160ms; }
+.toast.noact { padding: 12px 18px; }
+.toast.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); pointer-events: auto; transition: opacity 200ms ease, transform 220ms var(--ease-out), visibility 0s; }
+.toast .tact { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--bg) 20%, transparent); color: var(--bg); font-weight: 700; cursor: pointer; }
+@media (min-width: 900px) { .toast { inset: auto auto 28px calc(50% + 118px); } }
+
+/* ---------- Laden: Werte als graue Balken in Originalgröße ---------- */
+.app[data-loading] :is(.hero-num, .words, .pts, .stat, .val, .cmp td, .konto, .zbig, .trow) { color: transparent !important; background: var(--field); border-radius: 6px; }
+.app[data-loading] :is(.scale, .konto .cells, .chart, .bars) { visibility: hidden; }
+
+/* ---------- Weniger Bewegung: Blenden statt Gleiten ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .seg-ind, .sw, .sw::after, details.prog > summary svg { transition: none; }
+  .btn:active, .iconbtn:active:not(:disabled), .stepper button:active:not(:disabled), .tchip:active { transform: none; }
+  dialog.sheet, dialog.sheet.closing { transform: none; transition: opacity 150ms ease; }
+  dialog.sheet.closing { opacity: 0; }
+  @starting-style { dialog.sheet[open] { transform: none; opacity: 0; } }
+  .toast, .toast.show { transform: translate(-50%, 0); }
+}
+</style>
+
+<div class="app" id="app" data-loading="1">
+  <nav class="side" aria-label="Bereiche">
+    <div class="brand"><span class="mark" aria-hidden="true">Ø</span><div><strong>Abi-Rechner</strong><small>Abitur 2028 · NRW</small></div></div>
+    <div class="snav">
+      <button type="button" data-go="uebersicht"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l3.5-4.5"/><path d="M4 20h16"/></svg>Übersicht</button>
+      <button type="button" data-go="noten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="2.6"/></svg>Noten</button>
+      <button type="button" data-go="einzelnoten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h10a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-10z"/><path d="M6.5 3.5v17"/><path d="M10.5 8.5h4.5M10.5 12.5h4.5"/></svg>Einzelnoten</button>
+      <button type="button" data-go="planung"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12h.01" stroke-width="2.8"/></svg>Planung</button>
+      <button type="button" data-go="kursbogen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 10h17M3.5 14.5h17M9 5v14"/></svg>Kursbogen</button>
+    </div>
+    <div class="snav end">
+      <p class="who" id="sideWho"></p>
+      <button type="button" data-go="einstellungen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M18 7h2M4 17h3M12 17h8"/><circle cx="15.5" cy="7" r="2.3"/><circle cx="9.5" cy="17" r="2.3"/></svg>Einstellungen</button>
+    </div>
+  </nav>
+
+  <div class="col">
+    <header class="topbar">
+      <div class="tb-in">
+        <h1 id="tbTitle">Übersicht</h1>
+        <button type="button" class="status" id="tbStatus" data-kind="busy" aria-label="Speicherstatus: lädt"><span class="dot" aria-hidden="true"></span><span id="tbStatusText">Lädt …</span></button>
+        <button type="button" class="iconbtn" data-go="einstellungen" aria-label="Einstellungen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M18 7h2M4 17h3M12 17h8"/><circle cx="15.5" cy="7" r="2.3"/><circle cx="9.5" cy="17" r="2.3"/></svg></button>
+      </div>
+    </header>
+
+    <main class="main" id="main" inert>
+      <!-- Übersicht -->
+      <section class="screen wrap" data-screen="uebersicht" aria-label="Übersicht">
+        <p class="warnline" id="ovWarn" hidden></p>
+        <div class="ov">
+          <div class="ov-a">
+            <article class="card hero" aria-labelledby="ovHeroL">
+              <span class="label" id="ovHeroL">Abi-Schnitt · Prognose (Mittelwert)</span>
+              <div class="hero-num" id="ovNote">–</div>
+              <p class="words" id="ovWords"></p>
+              <p class="pts" id="ovPts"></p>
+              <div class="scale" id="ovScale" role="img" aria-label="Notenskala"></div>
+              <div id="ovKonto"></div>
+            </article>
+            <article class="card" id="ovSzen">
+              <h2>Szenarien</h2>
+              <table class="cmp" id="ovCmp"></table>
+              <p class="warnline" id="ovCmpWarn" hidden></p>
+            </article>
+          </div>
+          <div class="ov-b">
+            <article class="card" id="ovTermine" aria-label="Klausurtermine"></article>
+            <div class="duo">
+              <article class="card" id="ovIst"></article>
+              <article class="card" id="ovZiel"></article>
+            </div>
+          </div>
+          <article class="card" id="ovVerlauf">
+            <div><h2>Verlauf</h2><p class="help">Schnitt deiner eingetragenen Noten pro Quartal (LK und Projektkurs doppelt). Die gestrichelte Linie ist der Kursschnitt, den du für deine Wunschnote brauchst.</p></div>
+            <div class="chart" id="chart"></div>
+            <p class="meta" id="chartNote" hidden></p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Noten -->
+      <section class="screen wrap" data-screen="noten" aria-label="Noten" hidden>
+        <div class="seg" role="tablist" aria-label="Halbjahr" id="semSeg"></div>
+        <div class="md" id="md" role="tabpanel" aria-label="Fächer und Prüfungen">
+          <div class="screen" id="notenBody"></div>
+          <aside class="pane" id="pane" aria-label="Fach-Details"></aside>
+        </div>
+      </section>
+
+      <!-- Einzelnoten -->
+      <section class="screen wrap" data-screen="einzelnoten" aria-label="Einzelnoten" hidden>
+        <div class="ntools">
+          <label class="sel">Fach<select id="logFC"></select></label>
+          <label class="sel">Halbjahr<select id="logFS"></select></label>
+          <button type="button" class="btn primary" id="addNote"><svg class="i s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Einzelnote</button>
+        </div>
+        <p class="help">Tests, Referate, Praxisprüfungen, mündliche Rückmeldungen, auch als Spanne wie 11-12. Sie zählen nicht in die Rechnung und sind zum Nachschauen da, zum Beispiel vor der Notenbesprechung.</p>
+        <div id="logList"></div>
+      </section>
+
+      <!-- Planung -->
+      <section class="screen wrap" data-screen="planung" aria-label="Planung" hidden>
+        <div class="seg" role="group" aria-label="Planung" id="planSeg"></div>
+        <div class="screen" id="planZiel">
+          <article class="card">
+            <div class="zhead"><span class="label">Wunschnote</span>
+              <div class="stepper"><button type="button" id="zBetter" aria-label="Wunschnote um 0,1 verbessern">−</button><output id="zVal" aria-live="polite">1,0</output><button type="button" id="zWorse" aria-label="Wunschnote um 0,1 verschlechtern">+</button></div>
+            </div>
+            <p class="zbig" id="zielBig"></p>
+            <div class="zrows" id="zielRows"></div>
+            <p class="note" id="zielNote"></p>
+          </article>
+          <article class="card">
+            <div><h2>Wo ein Punkt am meisten bringt</h2><p class="help">Gesamtpunkte für +1 Punkt in jedem offenen Halbjahr eines Fachs (Szenario Mittel). 18 Gesamtpunkte sind etwa 0,1 Note.</p></div>
+            <ol class="bars" id="bars"></ol>
+            <p class="note" id="hebNote"></p>
+          </article>
+        </div>
+        <div class="screen" id="planProg" hidden>
+          <p class="help">Deine erwartete Spanne pro Fach. Der Rechner nutzt sie für alles, was noch nicht eingetragen ist: „von“ im schlechtesten Fall, „bis“ im besten, die Mitte im Mittelwert.</p>
+          <ul class="list" id="progList"></ul>
+          <p class="scale-note">Notenpunkte: 15–13 sehr gut · 12–10 gut · 9–7 befriedigend · 6–5 ausreichend · 4 schwach ausreichend (Defizit) · 3–1 mangelhaft · 0 ungenügend (Kurs gilt als nicht belegt)</p>
+        </div>
+      </section>
+
+      <!-- Kursbogen -->
+      <section class="screen wrap" data-screen="kursbogen" aria-label="Kursbogen" hidden>
+        <div class="seg" role="group" aria-label="Szenario" id="bogenSeg"></div>
+        <article class="card zul" id="bogenZul"></article>
+        <article class="card"><div class="tscroll"><table class="bogen" id="bogen"></table></div></article>
+        <p class="legend"><strong>Fett</strong> = Zeugnisnote · normal = aus deinen Noten geschätzt · <em>grau kursiv</em> = Prognose · (in Klammern) = gestrichen · <span class="dv">unterstrichen</span> = Defizit (4 Punkte oder weniger)</p>
+      </section>
+
+      <!-- Einstellungen -->
+      <section class="screen wrap" data-screen="einstellungen" aria-label="Einstellungen" hidden>
+        <div class="screen" id="settingsBody"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="tabbar" aria-label="Bereiche">
+    <button type="button" data-go="uebersicht"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l3.5-4.5"/><path d="M4 20h16"/></svg><span>Übersicht</span></button>
+    <button type="button" data-go="noten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="2.6"/></svg><span>Noten</span></button>
+    <button type="button" data-go="einzelnoten"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h10a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-10z"/><path d="M6.5 3.5v17"/><path d="M10.5 8.5h4.5M10.5 12.5h4.5"/></svg><span>Einzelnoten</span></button>
+    <button type="button" data-go="planung"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12h.01" stroke-width="2.8"/></svg><span>Planung</span></button>
+    <button type="button" data-go="kursbogen"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 10h17M3.5 14.5h17M9 5v14"/></svg><span>Kursbogen</span></button>
+  </nav>
+</div>
+
+<dialog class="sheet" id="sheet" aria-labelledby="shTitle"><div class="shwrap" id="shBody"></div></dialog>
+<div class="toast noact" id="toast" popover="manual"><span id="toastText"></span><button type="button" class="tact" id="toastAct" hidden></button></div>
+<p class="sr" id="srLive" aria-live="polite"></p>
+
+<script>
+/* ===== Rechenlogik nach APO-GOSt NRW (bisherige Fassung, Abitur 2028) ===== */
+const SEMS = ["Q1.1", "Q1.2", "Q2.1", "Q2.2"];
+const COURSES = {
+  M:  { name: "Mathematik", short: "Mathe", lk: true },
+  EK: { name: "Erdkunde", short: "Erdkunde", lk: true },
+  D:  { name: "Deutsch", short: "Deutsch" },
+  G:  { name: "Geschichte", short: "Geschichte" },
+  E:  { name: "Englisch", short: "Englisch" },
+  BI: { name: "Biologie", short: "Bio" },
+  PH: { name: "Physik", short: "Physik" },
+  RE: { name: "Ev. Religion", short: "Religion" },
+  KU: { name: "Kunst", short: "Kunst" },
+  SP: { name: "Sport", short: "Sport" },
+  SW: { name: "Sowi-Zusatzkurs", short: "Sowi ZK" },
+  PK: { name: "Projektkurs Wirtschaft", short: "Projektkurs", pk: true }
+};
+const COURSE_IDS = Object.keys(COURSES);
+const ABI_CHOICES = ["D", "E", "G", "BI", "PH", "RE"];
+const PK_PERIODS = { Q1: ["Q1.1", "Q1.2"], Q12: ["Q1.2", "Q2.1"], Q2: ["Q2.1", "Q2.2"] };
+const SCEN = ["Schlecht", "Mittel", "Gut", "Trend"];
+
+function defaultState() {
+  const prog = {};
+  for (const c of COURSE_IDS) prog[c] = [10, 12];
+  return {
+    v: 1,
+    settings: {
+      abi3: "D", abi4: "G", relQ2: true, kuQ2: false, sportMax: 4, pkPeriod: "Q2", ziel: 1.0,
+      klausur: { M: true, EK: true, D: true, G: true, E: true, BI: true, PH: false, RE: false, KU: false, SP: false, SW: false }
+    },
+    prog,
+    grades: {},
+    pk: { s: [null, null, null, null], doku: null, z: null },
+    notes: [],
+    abi: {}
+  };
+}
+
+const isNum = (x) => typeof x === "number" && isFinite(x);
+const gradeOrNull = (x) => (isNum(x) && x >= 0 && x <= 15 ? Math.round(x) : null);
+/* Termine als ISO-Datum "2026-11-12", sonst null. */
+const isoOrNull = (x) => (typeof x === "string" && /^\d{4}-\d{2}-\d{2}$/.test(x) ? x : null);
+/* Klausur-, SoMi- und Doku-Noten dürfen eine Spanne sein, z. B. { lo: 11, hi: 12 }. */
+const isRng = (x) => x != null && typeof x === "object" && !Array.isArray(x);
+function valOrNull(x) {
+  if (isRng(x)) {
+    const a = gradeOrNull(x.lo), b = gradeOrNull(x.hi);
+    if (a == null || b == null) return null;
+    return a === b ? a : { lo: Math.min(a, b), hi: Math.max(a, b) };
+  }
+  return gradeOrNull(x);
+}
+/* Wert einer Note im Szenario s: 0 = untere Grenze, 2 = obere, sonst die Mitte. */
+function gv(x, s) { if (!isRng(x)) return x; return s === 0 ? x.lo : s === 2 ? x.hi : (x.lo + x.hi) / 2; }
+const gmid = (x) => gv(x, 1);
+
+function normalize(raw) {
+  const st = defaultState();
+  if (!raw || typeof raw !== "object") return st;
+  const s = raw.settings || {};
+  const S = st.settings;
+  if (ABI_CHOICES.includes(s.abi3)) S.abi3 = s.abi3;
+  if (ABI_CHOICES.includes(s.abi4) && s.abi4 !== S.abi3) S.abi4 = s.abi4;
+  if (S.abi4 === S.abi3) S.abi4 = ABI_CHOICES.find((c) => c !== S.abi3);
+  if (typeof s.relQ2 === "boolean") S.relQ2 = s.relQ2;
+  if (typeof s.kuQ2 === "boolean") S.kuQ2 = s.kuQ2;
+  if (s.sportMax === 3 || s.sportMax === 4) S.sportMax = s.sportMax;
+  if (PK_PERIODS[s.pkPeriod]) S.pkPeriod = s.pkPeriod;
+  if (isNum(s.ziel) && s.ziel >= 1 && s.ziel <= 4) S.ziel = Math.round(s.ziel * 10) / 10;
+  if (s.klausur && typeof s.klausur === "object") {
+    for (const c of Object.keys(S.klausur)) if (typeof s.klausur[c] === "boolean") S.klausur[c] = s.klausur[c];
+  }
+  if (raw.prog) {
+    for (const c of COURSE_IDS) {
+      const p = raw.prog[c];
+      if (Array.isArray(p) && isNum(p[0]) && isNum(p[1])) {
+        const lo = Math.max(0, Math.min(15, p[0])), hi = Math.max(0, Math.min(15, p[1]));
+        st.prog[c] = [Math.min(lo, hi), Math.max(lo, hi)];
+      }
+    }
+  }
+  if (raw.grades && typeof raw.grades === "object") {
+    for (const c of COURSE_IDS) {
+      const gc = raw.grades[c];
+      if (!gc || typeof gc !== "object") continue;
+      for (const sem of SEMS) {
+        const g = gc[sem];
+        if (!g || typeof g !== "object") continue;
+        const k = [0, 1].map((i) => valOrNull(g.k && g.k[i]));
+        const sm = [0, 1].map((i) => valOrNull(g.s && g.s[i]));
+        const z = gradeOrNull(g.z);
+        const kd = [0, 1].map((i) => isoOrNull(g.kd && g.kd[i])); /* Klausurtermine */
+        if (k.some((x) => x != null) || sm.some((x) => x != null) || z != null || kd.some((x) => x)) {
+          st.grades[c] = st.grades[c] || {};
+          st.grades[c][sem] = { k, s: sm, z, kd };
+        }
+      }
+    }
+  }
+  if (raw.pk && typeof raw.pk === "object") {
+    st.pk.s = [0, 1, 2, 3].map((i) => valOrNull(raw.pk.s && raw.pk.s[i]));
+    st.pk.doku = valOrNull(raw.pk.doku);
+    st.pk.z = gradeOrNull(raw.pk.z);
+  }
+  if (Array.isArray(raw.notes)) {
+    st.notes = raw.notes
+      .filter((n) => n && typeof n === "object" && COURSE_IDS.includes(n.c) && valOrNull(n.p) != null)
+      .slice(0, 2000)
+      .map((n) => ({
+        id: typeof n.id === "string" && n.id ? n.id.slice(0, 40) : Math.random().toString(36).slice(2, 10),
+        c: n.c,
+        p: valOrNull(n.p),
+        t: typeof n.t === "string" ? n.t.slice(0, 120) : "",
+        d: typeof n.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(n.d) ? n.d : ""
+      }));
+  }
+  if (raw.abi && typeof raw.abi === "object") {
+    for (const c of ["M", "EK", ...ABI_CHOICES]) {
+      const a = raw.abi[c];
+      if (!a || typeof a !== "object") continue;
+      const lo = isNum(a.lo) ? Math.max(0, Math.min(15, a.lo)) : 10;
+      const hi = isNum(a.hi) ? Math.max(0, Math.min(15, a.hi)) : 12;
+      st.abi[c] = { lo: Math.min(lo, hi), hi: Math.max(lo, hi), res: gradeOrNull(a.res), d: isoOrNull(a.d) };
+    }
+  }
+  return st;
+}
+
+const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+function abiList(st) { const s = st.settings; return ["M", "EK", s.abi3, s.abi4]; }
+function isAbi(c, st) { return abiList(st).includes(c); }
+function activeSems(c, st) {
+  const s = st.settings;
+  if (c === "SW") return ["Q2.1", "Q2.2"];
+  if (c === "KU") return s.kuQ2 ? SEMS : SEMS.slice(0, 2);
+  if (c === "RE") return s.relQ2 ? SEMS : SEMS.slice(0, 2);
+  if (c === "PK") return PK_PERIODS[s.pkPeriod];
+  return SEMS;
+}
+function hasKlausur(c, st) {
+  if (COURSES[c].pk) return false;
+  return isAbi(c, st) || !!st.settings.klausur[c];
+}
+function klausurCount(c, sem, st) {
+  if (!hasKlausur(c, st)) return 0;
+  if (sem === "Q2.2") return abiList(st).slice(0, 3).includes(c) ? 1 : 0;
+  return 2;
+}
+function progVal(st, c, s) {
+  const p = st.prog[c], lo = Math.min(p[0], p[1]), hi = Math.max(p[0], p[1]);
+  return s === 0 ? lo : s === 2 ? hi : (lo + hi) / 2;
+}
+function courseKnown(st, c) {
+  const vals = [];
+  if (c === "PK") {
+    const p = st.pk;
+    if (p.z != null) return [p.z];
+    p.s.forEach((x) => x != null && vals.push(gmid(x)));
+    if (p.doku != null) vals.push(gmid(p.doku));
+    return vals;
+  }
+  for (const sem of activeSems(c, st)) {
+    const g = st.grades[c] && st.grades[c][sem];
+    if (!g) continue;
+    if (g.z != null) { vals.push(g.z); continue; }
+    g.k.forEach((x) => x != null && vals.push(gmid(x)));
+    g.s.forEach((x) => x != null && vals.push(gmid(x)));
+  }
+  return vals;
+}
+function fillVal(st, c, s) {
+  if (s === 3) { const k = courseKnown(st, c); return k.length ? mean(k) : progVal(st, c, 1); }
+  return progVal(st, c, s);
+}
+
+/* Halbjahresnote eines Kurses. cutoff = letztes Quartal (0..7), bis zu dem Noten zählen.
+   s = Szenario für eingetragene Noten (Spannen), ps = Szenario für die Prognose leerer Felder. */
+function semNote(st, c, sem, s, cutoff = 7, ps = s) {
+  const si = SEMS.indexOf(sem), q0 = si * 2, q1 = q0 + 1;
+  const g = (st.grades[c] && st.grades[c][sem]) || { k: [null, null], s: [null, null], z: null };
+  if (g.z != null && q1 <= cutoff) return { v: g.z, final: true, known: 1, total: 1, rng: false };
+  const pv = fillVal(st, c, ps);
+  const kc = klausurCount(c, sem, st);
+  const ks = [], ss = [];
+  let known = 0, total = 0, rng = false;
+  for (let i = 0; i < kc; i++) {
+    const q = i === 0 ? q0 : q1, x = g.k[i];
+    total++;
+    if (x != null && q <= cutoff) { ks.push(gv(x, s)); known++; rng = rng || isRng(x); } else ks.push(pv);
+  }
+  for (let j = 0; j < 2; j++) {
+    const q = j === 0 ? q0 : q1, x = g.s[j];
+    total++;
+    if (x != null && q <= cutoff) { ss.push(gv(x, s)); known++; rng = rng || isRng(x); } else ss.push(pv);
+  }
+  const v = kc ? 0.5 * mean(ks) + 0.5 * mean(ss) : mean(ss);
+  return { v, final: false, known, total, rng };
+}
+function pkQuarters(st) {
+  const qs = [];
+  PK_PERIODS[st.settings.pkPeriod].forEach((sem) => { const si = SEMS.indexOf(sem); qs.push(si * 2, si * 2 + 1); });
+  return qs;
+}
+function pkNote(st, s, cutoff = 7, ps = s) {
+  const qs = pkQuarters(st), endQ = qs[3], p = st.pk;
+  if (p.z != null && endQ <= cutoff) return { v: p.z, final: true, known: 1, total: 1, rng: false };
+  const pv = fillVal(st, "PK", ps);
+  const ss = [];
+  let known = 0, rng = false;
+  for (let j = 0; j < 4; j++) {
+    const x = p.s[j];
+    if (x != null && qs[j] <= cutoff) { ss.push(gv(x, s)); known++; rng = rng || isRng(x); } else ss.push(pv);
+  }
+  let d = pv;
+  if (p.doku != null && endQ <= cutoff) { d = gv(p.doku, s); known++; rng = rng || isRng(p.doku); }
+  return { v: 0.5 * mean(ss) + 0.5 * d, final: false, known, total: 5, rng };
+}
+
+/* Alle Halbjahresergebnisse mit Pflicht-Markierung nach § 28 APO-GOSt. */
+function buildItems(st, s, bump = null) {
+  const abis = abiList(st);
+  const items = [];
+  for (const c of COURSE_IDS) {
+    if (c === "PK") continue;
+    for (const sem of activeSems(c, st)) {
+      const r = semNote(st, c, sem, s);
+      let pts = r.v;
+      if (bump && bump.c === c && !r.final) pts = Math.min(15, pts + bump.d);
+      const lk = !!COURSES[c].lk, q1 = SEMS.indexOf(sem) < 2;
+      let mand = false, nwQ1 = false;
+      if (lk || abis.includes(c) || c === "D" || c === "E" || c === "SW") mand = true;
+      else if (c === "BI" || c === "PH") { if (q1) nwQ1 = true; else mand = true; }
+      else if (c === "G" || c === "RE" || c === "KU") mand = q1;
+      items.push({ key: c + "|" + sem, c, sem, pts, w: lk ? 2 : 1, n: 1, mand, nwQ1, sport: c === "SP", final: r.final, known: r.known, total: r.total });
+    }
+  }
+  const r = pkNote(st, s);
+  let pts = r.v;
+  if (bump && bump.c === "PK" && !r.final) pts = Math.min(15, pts + bump.d);
+  const sems = PK_PERIODS[st.settings.pkPeriod];
+  items.push({ key: "PK", c: "PK", sem: sems[1], pts, w: 1, n: 2, mand: false, nwQ1: false, sport: false, final: r.final, known: r.known, total: r.total });
+  return items;
+}
+
+const isDef = (pts) => pts < 4.5;
+
+/* Beste Einbringung: maximiert den Block-I-Schnitt unter allen Zulassungsbedingungen. */
+function optimize(items, st) {
+  const sportMax = st.settings.sportMax;
+  const hasNW = items.some((i) => i.nwQ1);
+  let best = null;
+  for (const opt of hasNW ? ["PH", "BI"] : [null]) {
+    let P = 0, S = 0, C = 0, def = 0, ldef = 0, zero = 0;
+    const mandKeys = [], free = [];
+    for (const it of items) {
+      const m = it.mand || (it.nwQ1 && it.c === opt);
+      if (m) {
+        P += it.pts * it.w * it.n; S += it.w * it.n; C += it.n;
+        if (isDef(it.pts)) { def += it.n; if (it.w === 2) ldef++; }
+        if (it.pts < 0.5) zero++;
+        mandKeys.push(it.key);
+      } else free.push(it);
+    }
+    const nF = free.length;
+    for (let mask = 0; mask < 1 << nF; mask++) {
+      let p = P, s = S, c = C, d = def, ld = ldef, sp = 0, bad = false;
+      for (let i = 0; i < nF; i++) {
+        if (!(mask & (1 << i))) continue;
+        const it = free[i];
+        if (it.pts < 0.5) { bad = true; break; }
+        p += it.pts * it.w * it.n; s += it.w * it.n; c += it.n;
+        if (isDef(it.pts)) { d += it.n; if (it.w === 2) ld++; }
+        if (it.sport) sp++;
+      }
+      if (bad || c < 35 || c > 40 || sp > sportMax) continue;
+      const defMax = c <= 37 ? 7 : 8;
+      const valid = zero === 0 && ld <= 3 && d <= defMax;
+      const ratio = p / s;
+      if (!best || (valid && !best.valid) || (valid === best.valid && ratio > best.ratio + 1e-12)) {
+        best = { ratio, P: p, S: s, C: c, def: d, ldef: ld, defMax, valid, zero, mask, free, mandKeys, opt };
+      }
+    }
+  }
+  const included = new Set(best.mandKeys);
+  best.free.forEach((it, i) => { if (best.mask & (1 << i)) included.add(it.key); });
+  const EI = Math.floor(best.ratio * 40 + 0.5 + 1e-9);
+  return {
+    ratio: best.ratio, raw: best.ratio * 40, EI, C: best.C, def: best.def, ldef: best.ldef, defMax: best.defMax,
+    valid: best.valid && EI >= 200, zeroMand: best.zero > 0, included, nwOpt: best.opt
+  };
+}
+
+function examRange(st, c) { const a = st.abi[c]; return a ? [Math.min(a.lo, a.hi), Math.max(a.lo, a.hi)] : [10, 12]; }
+function examRes(st, c) { const a = st.abi[c]; return a && a.res != null ? a.res : null; }
+function examVal(st, c, s) {
+  const r = examRes(st, c);
+  if (r != null) return r;
+  const [lo, hi] = examRange(st, c);
+  return s === 0 ? lo : s === 2 ? hi : (lo + hi) / 2;
+}
+function blockII(st, s) {
+  const abis = abiList(st);
+  const vals = abis.map((c) => examVal(st, c, s));
+  const EII = vals.reduce((a, b) => a + b, 0) * 5;
+  const ok = abis.filter((c, i) => vals[i] >= 5);
+  const cond = EII >= 100 && ok.length >= 2 && ok.some((c) => COURSES[c].lk);
+  return { vals, EII, cond };
+}
+
+/* KMK-Umrechnung: N = 17/3 - P/180, eine Nachkommastelle ohne Rundung; ab 823 Punkten 1,0. */
+function abiNote(T) {
+  if (T < 300) return null;
+  if (T >= 823) return 1.0;
+  return Math.floor((17 / 3 - T / 180) * 10 + 1e-9) / 10;
+}
+function minTotalFor(n) {
+  for (let T = 300; T <= 900; T++) { const x = abiNote(T); if (x != null && x <= n + 1e-9) return T; }
+  return 901;
+}
+
+function scenario(st, s) {
+  const items = buildItems(st, s);
+  const opt = optimize(items, st);
+  const b2 = blockII(st, s);
+  const total = opt.EI + b2.EII;
+  return { s, items, opt, b2, total, note: opt.valid && b2.cond ? abiNote(total) : null, noteRaw: abiNote(total) };
+}
+
+function hebel(st, base) {
+  const out = [];
+  for (const c of COURSE_IDS) {
+    const open = base.items.filter((i) => i.c === c && !i.final && i.pts < 15);
+    if (!open.length) continue;
+    const r = optimize(buildItems(st, 1, { c, d: 1 }), st);
+    const dAll = r.raw - base.opt.raw;
+    out.push({ c, per: dAll / open.length, all: dAll, n: open.length, counts: open.some((i) => base.opt.included.has(i.key)) });
+  }
+  return out.sort((a, b) => b.per - a.per);
+}
+
+/* Bekannte Halbjahresnote nur aus echten Einträgen (für den Ist-Schnitt). */
+function knownSem(st, c, sem) {
+  const g = st.grades[c] && st.grades[c][sem];
+  if (!g) return null;
+  if (g.z != null) return g.z;
+  const ks = g.k.filter((x) => x != null).map(gmid), ss = g.s.filter((x) => x != null).map(gmid);
+  if (!ks.length && !ss.length) return null;
+  if (ks.length && ss.length) return 0.5 * mean(ks) + 0.5 * mean(ss);
+  return ks.length ? mean(ks) : mean(ss);
+}
+function istStand(st) {
+  let sum = 0, w = 0, n = 0;
+  for (const c of COURSE_IDS) {
+    if (c === "PK") {
+      const k = courseKnown(st, "PK");
+      if (k.length) {
+        const p = st.pk;
+        let v;
+        if (p.z != null) v = p.z;
+        else {
+          const ss = p.s.filter((x) => x != null).map(gmid);
+          v = ss.length && p.doku != null ? 0.5 * mean(ss) + 0.5 * gmid(p.doku) : mean(k);
+        }
+        sum += v * 2; w += 2; n += k.length;
+      }
+      continue;
+    }
+    for (const sem of activeSems(c, st)) {
+      const v = knownSem(st, c, sem);
+      if (v == null) continue;
+      const wt = COURSES[c].lk ? 2 : 1;
+      sum += v * wt; w += wt;
+    }
+    n += courseKnown(st, c).length;
+  }
+  return w ? { avg: sum / w, n } : { avg: null, n: 0 };
+}
+
+/* Schnitt pro Quartal aus echten Einträgen (LK doppelt, Projektkurs doppelt). */
+function verlauf(st) {
+  const out = [];
+  const pq = pkQuarters(st);
+  for (let q = 0; q < 8; q++) {
+    const si = Math.floor(q / 2), j = q % 2, sem = SEMS[si];
+    let sum = 0, wsum = 0, n = 0;
+    for (const c of COURSE_IDS) {
+      if (c === "PK") continue;
+      if (!activeSems(c, st).includes(sem)) continue;
+      const g = st.grades[c] && st.grades[c][sem];
+      if (!g) continue;
+      const kc = klausurCount(c, sem, st);
+      let kx = null;
+      if (kc === 2) kx = g.k[j]; else if (kc === 1 && j === 0) kx = g.k[0];
+      kx = kx == null ? null : gmid(kx);
+      const sx = g.s[j] == null ? null : gmid(g.s[j]);
+      let v = null, cnt = 0;
+      if (kx != null && sx != null) { v = 0.5 * kx + 0.5 * sx; cnt = 2; }
+      else if (kx != null) { v = kx; cnt = 1; }
+      else if (sx != null) { v = sx; cnt = 1; }
+      const anyDetail = g.k.some((x) => x != null) || g.s.some((x) => x != null);
+      if (v == null && j === 1 && g.z != null && !anyDetail) { v = g.z; cnt = 1; }
+      if (v == null) continue;
+      const w = COURSES[c].lk ? 2 : 1;
+      sum += v * w; wsum += w; n += cnt;
+    }
+    const pi = pq.indexOf(q);
+    if (pi >= 0) {
+      const vals = [];
+      if (st.pk.s[pi] != null) vals.push(gmid(st.pk.s[pi]));
+      if (pi === 3 && st.pk.doku != null) vals.push(gmid(st.pk.doku));
+      if (vals.length) { sum += mean(vals) * 2; wsum += 2; n += vals.length; }
+    }
+    out.push({ q, v: wsum ? sum / wsum : null, n });
+  }
+  return out;
+}
+
+function currentSemIndex(d = new Date()) {
+  const y = d.getFullYear(), m = d.getMonth() + 1;
+  const t = y * 100 + m;
+  if (t < 202702) return 0;
+  if (t < 202708) return 1;
+  if (t < 202802) return 2;
+  return 3;
+}
+
+function semOfDate(d) {
+  if (!d) return null;
+  const [y, m] = d.split("-").map(Number);
+  return SEMS[currentSemIndex(new Date(y, m - 1, 15))];
+}
+
+function computeAll(st) {
+  const sc = [0, 1, 2, 3].map((s) => scenario(st, s));
+  const ziel = st.settings.ziel;
+  const T = minTotalFor(ziel);
+  const ist = istStand(st);
+  return { sc, T, ziel, heb: hebel(st, sc[1]), ist, verlauf: verlauf(st) };
+}
+
+if (typeof module !== "undefined") {
+  module.exports = { SEMS, COURSES, COURSE_IDS, defaultState, normalize, computeAll, scenario, abiNote, minTotalFor, verlauf, istStand, buildItems, optimize, semNote, pkNote };
+}
+
+/* ===== Oberfläche (App 2) ===== */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const LS = { state: "abi-app2-state", screen: "abi-app2-screen", sem: "abi-app2-sem", plan: "abi-app2-plan", seg: "abi-app2-seg", sel: "abi-app2-sel", backup: "abi-app2-backup" };
+  /* Ohne Claude läuft der Rechner als eigene App: Speichern im Gerät ist dann der Normalfall, kein Warnzustand. */
+  const STANDALONE = !(window.claude && typeof window.claude.use === "function");
+  const LOCAL_OK = ["Auf diesem Gerät gespeichert", "ok", "Gespeichert"];
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const mq = (q) => { try { return matchMedia(q); } catch (e) { return { matches: false, addEventListener() {} }; } };
+  const wideMQ = mq("(min-width: 1100px)");
+  const phoneMQ = mq("(max-width: 899px)");
+  const reduceMQ = mq("(prefers-reduced-motion: reduce)");
+  const isWide = () => wideMQ.matches;
+
+  let state = defaultState();
+  let mode = "loading";
+  let loaded = false;
+  let dbRef = null;
+  let lastJSON = null;
+  let saveTimer = null, saving = false, savePending = false;
+  let pendingRemote = null;
+  let result = null;
+  let status = { text: "Lädt gespeicherte Noten …", kind: "busy", short: "Lädt …" };
+  const nowSem = currentSemIndex();
+  const SCREENS = { uebersicht: "Übersicht", noten: "Noten", einzelnoten: "Einzelnoten", planung: "Planung", kursbogen: "Kursbogen", einstellungen: "Einstellungen" };
+  const SEM_TABS = [...SEMS, "Abitur"];
+  let screen = null;
+  let semTab = (() => { const t = lsGet(LS.sem); return SEM_TABS.includes(t) ? t : SEMS[nowSem]; })();
+  let planTab = lsGet(LS.plan) === "prognosen" ? "prognosen" : "ziel";
+  let segS = (() => { const r = lsGet(LS.seg); const v = r == null ? NaN : Number(r); return [0, 1, 2, 3].includes(v) ? v : 1; })();
+  let mdSel = lsGet(LS.sel);
+  let sheet = null;
+  let sheetReturn = null;
+  let termAll = false;
+  const scrollPos = {};
+  const SC_LABEL = ["Schlechtester Fall", "Mittelwert", "Bester Fall", "Trend"];
+  const SEG_LABEL = ["Schlecht", "Mittel", "Gut", "Trend"];
+
+  const ICON = {
+    chev: '<svg class="i s" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+    left: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
+    right: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+    x: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
+    plus: '<svg class="i s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>'
+  };
+
+  /* ---------- Formatierung ---------- */
+  const nf = (x, d = 1) => x.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pf = (x) => (Math.abs(x - Math.round(x)) < 1e-9 ? String(Math.round(x)) : nf(x, 1));
+  const r1 = (x) => Math.round(x * 10) / 10;
+  const noteStr = (n) => (n == null ? "–" : nf(n, 1));
+  const NOTE_TXT = ["6", "5−", "5", "5+", "4−", "4", "4+", "3−", "3", "3+", "2−", "2", "2+", "1−", "1", "1+"];
+  const ptsNote = (p) => NOTE_TXT[Math.max(0, Math.min(15, Math.round(p)))];
+  const esc = (s) => String(s).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]));
+  const fmtVal = (v) => (v == null ? "" : isRng(v) ? `${v.lo}-${v.hi}` : pf(v));
+  const fmtP = (p) => (isRng(p) ? `${p.lo}–${p.hi}` : String(p));
+  const noteP = (p) => (isRng(p) ? `${ptsNote(p.lo)} bis ${ptsNote(p.hi)}` : ptsNote(p));
+  const shownNote = (sc) => (sc.note != null ? sc.note : sc.noteRaw);
+  const WORDS = ["null", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun"];
+  const inWords = (n) => { if (n == null) return ""; const t = Math.round(n * 10); return `${WORDS[Math.floor(t / 10)] || ""} Komma ${WORDS[t % 10]}`; };
+  const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+  const fmtDate = (d) => { if (!d) return "–"; const [y, m, dd] = d.split("-"); return `${dd}.${m}.${y.slice(2)}`; };
+  const fmtDM = (d) => { const [, m, dd] = d.split("-"); return `${dd}.${m}.`; };
+  const MON = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
+  const parseISO = (d) => { const [y, m, dd] = d.split("-").map(Number); return new Date(y, m - 1, dd); };
+  const dayDiff = (d) => { const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((parseISO(d) - t) / 86400000); };
+  const relDay = (n) => (n === 0 ? "heute" : n === 1 ? "morgen" : n > 1 ? `in ${n} Tagen` : n === -1 ? "gestern" : `vor ${-n} Tagen`);
+
+  function announce(t) { const el = $("srLive"); el.textContent = ""; setTimeout(() => { el.textContent = t; }, 40); }
+
+  /* ---------- Eingaben lesen und prüfen ---------- */
+  /* Note oder Spanne: "11", "11-12", "11–12", "11 bis 12", "11/12" oder vom Ziffernblock "11,12". */
+  const RNG_RE = /^(\d{1,2})\s*(-|–|—|\/|,|\.|bis)\s*(\d{1,2})$/i;
+  const PART_RE = /^\d{1,2}\s*(-|–|—|\/|,|\.|b|bi|bis)\s*$/i;
+  function parseCell(t) {
+    if (t === "") return { v: null };
+    const n = Number(t.replace(",", "."));
+    if (/^\d{1,2}([.,]0)?$/.test(t)) return n <= 15 ? { v: n } : { bad: true };
+    const m = t.match(RNG_RE);
+    if (m) {
+      const a = Number(m[1]), b = Number(m[3]);
+      if (a > 15 || b > 15) return { bad: true };
+      if ((m[2] === "," || m[2] === ".") && b <= a) return { bad: true };
+      return { v: a === b ? a : { lo: Math.min(a, b), hi: Math.max(a, b) } };
+    }
+    if (PART_RE.test(t)) return { pend: true };
+    return { bad: true };
+  }
+  function cellError(t) {
+    const half = t.match(/^(\d{1,2})[.,]5$/);
+    if (half) { const a = Number(half[1]); return { msg: "Halbe Punkte gibt es nicht.", fix: a < 15 ? `${a}-${a + 1}` : null }; }
+    if (/^\d+$/.test(t)) return { msg: `${t} geht nicht, Punkte gehen von 0 bis 15.` };
+    const m = t.match(RNG_RE);
+    if (m) return Number(m[1]) > 15 || Number(m[3]) > 15 ? { msg: "Punkte gehen von 0 bis 15." } : { msg: "Mit Komma bitte die kleinere Zahl zuerst, zum Beispiel 11,12." };
+    if (PART_RE.test(t)) return { msg: "Spanne unvollständig, zum Beispiel 11-12." };
+    return { msg: "Trag Punkte von 0 bis 15 ein oder eine Spanne wie 11-12." };
+  }
+  const isRangeF = (f) => f === "lo" || f === "hi" || f === "alo" || f === "ahi";
+  function parseNum(t, f) {
+    if (t === "") return isRangeF(f) ? { pend: true } : { v: null };
+    const n = Number(t.replace(",", "."));
+    const ok = Number.isFinite(n) && n >= 0 && n <= 15 && (isRangeF(f) ? Math.abs(n * 2 - Math.round(n * 2)) < 1e-9 : Number.isInteger(n));
+    return ok ? { v: n } : { bad: true };
+  }
+  function numError(t, f) {
+    if (t === "") return { msg: "Die Prognose braucht einen Wert." };
+    const n = Number(t.replace(",", "."));
+    if (!Number.isFinite(n)) return { msg: "Nur Zahlen von 0 bis 15." };
+    if (n < 0 || n > 15) return { msg: "Punkte gehen von 0 bis 15." };
+    if (f === "ares") return { msg: "Das Ergebnis ist eine ganze Punktzahl von 0 bis 15." };
+    return { msg: "Nur ganze oder halbe Punkte, zum Beispiel 10,5." };
+  }
+  const markBad = (el) => { el.classList.add("bad"); el.setAttribute("aria-invalid", "true"); };
+  const unmark = (el) => { el.classList.remove("bad"); el.removeAttribute("aria-invalid"); };
+  function errBox(el) { const g = el.closest("[data-eg]"); return g ? g.querySelector(".ferr") : null; }
+  function showErr(el, msg, fix) {
+    const box = errBox(el);
+    if (!box) return;
+    box.innerHTML = `<span>${esc(msg)}</span>` + (fix ? `<button type="button" class="btn sm" data-fix="${esc(fix)}" data-for="${esc(el.id)}">${esc(fix)} eintragen</button>` : "");
+    box.dataset.for = el.id;
+    box.hidden = false;
+  }
+  function clearErr(el) {
+    const box = errBox(el);
+    if (box && !box.hidden && (!box.dataset.for || box.dataset.for === el.id)) { box.hidden = true; box.innerHTML = ""; delete box.dataset.for; }
+  }
+
+  /* ---------- Speicherstatus und Meldungen ---------- */
+  function setChip(text, kind, short) {
+    const was = status.kind;
+    status = { text, kind: kind || "ok", short: short || text };
+    const el = $("tbStatus");
+    el.dataset.kind = status.kind;
+    el.setAttribute("aria-label", `Speicherstatus: ${text}`);
+    $("tbStatusText").textContent = status.short;
+    const s = $("setSave");
+    if (s) { s.textContent = text; s.classList.toggle("bad-t", status.kind === "warn"); }
+    const r = $("retrySave");
+    if (r) r.hidden = !(status.kind === "warn" && mode === "db");
+    if (status.kind === "warn" && was !== "warn") announce(text);
+  }
+  $("tbStatus").addEventListener("click", () => {
+    if (sheet) closeSheet(true);
+    go("einstellungen");
+    setTimeout(() => { const s = $("setSave"); if (s) s.scrollIntoView({ block: "center" }); }, 0);
+  });
+
+  const toastEl = $("toast");
+  const canPop = typeof toastEl.showPopover === "function";
+  let toastTimer = 0, toastHide = 0, toastLeft = 0, toastStart = 0, toastAction = null;
+  function toast(text, action) {
+    clearTimeout(toastHide);
+    $("toastText").textContent = text;
+    const b = $("toastAct");
+    toastAction = action || null;
+    b.hidden = !action;
+    if (action) b.textContent = action.label;
+    toastEl.classList.toggle("noact", !action);
+    if (canPop) { try { if (toastEl.matches(":popover-open")) toastEl.hidePopover(); toastEl.showPopover(); } catch (e) {} }
+    toastEl.classList.remove("show");
+    void toastEl.offsetWidth;
+    requestAnimationFrame(() => toastEl.classList.add("show"));
+    announce(action ? `${text}. Rückgängig ist möglich.` : text);
+    startToast(action ? 8000 : 2400);
+  }
+  function startToast(ms) { clearTimeout(toastTimer); toastLeft = ms; toastStart = Date.now(); toastTimer = setTimeout(hideToast, ms); }
+  function hideToast() {
+    clearTimeout(toastTimer);
+    toastAction = null;
+    toastEl.classList.remove("show");
+    clearTimeout(toastHide);
+    toastHide = setTimeout(() => { if (canPop && !toastEl.classList.contains("show")) { try { toastEl.hidePopover(); } catch (e) {} } }, 240);
+  }
+  $("toastAct").addEventListener("click", () => { const a = toastAction; hideToast(); if (a) a.run(); });
+  document.addEventListener("visibilitychange", () => {
+    if (!toastEl.classList.contains("show")) return;
+    if (document.hidden) { clearTimeout(toastTimer); toastLeft = Math.max(0, toastLeft - (Date.now() - toastStart)); }
+    else startToast(Math.max(1500, toastLeft));
+  });
+
+  /* ---------- Fächer ---------- */
+  function orderedCourses() {
+    const s = state.settings;
+    const first = ["M", "EK", s.abi3, s.abi4];
+    return [...first, ...COURSE_IDS.filter((c) => !first.includes(c))];
+  }
+  function badges(c) {
+    const abis = abiList(state);
+    const t = [];
+    if (COURSES[c].lk) t.push('<span class="b lk">LK</span>');
+    const ai = abis.indexOf(c);
+    if (ai >= 0) t.push(`<span class="b">${ai + 1}. Abifach</span>`);
+    if (c === "PK") t.push('<span class="b">zählt doppelt</span>');
+    return t.join("");
+  }
+  function tagText(c) {
+    const abis = abiList(state);
+    const t = [];
+    if (COURSES[c].lk) t.push("LK");
+    const ai = abis.indexOf(c);
+    if (ai >= 0) t.push(`${ai + 1}. Abifach`);
+    if (c === "PK") t.push("zählt doppelt");
+    else if (!hasKlausur(c, state)) t.push("ohne Klausur");
+    return t;
+  }
+  const coursesIn = (sem) => orderedCourses().filter((c) => activeSems(c, state).includes(sem));
+  const notesFor = (c, sem) => (state.notes || []).filter((n) => n.c === c && semOfDate(n.d) === sem).sort((a, b) => a.d.localeCompare(b.d));
+
+  function fieldHTML(label, dat, val, o = {}) {
+    const id = `${o.pre || "i"}-${dat.replace(/[^a-zA-Z0-9]/g, "-")}`;
+    const attrs = o.rng ? 'maxlength="9" data-rng="1"' : 'maxlength="4"';
+    return `<label class="f ${o.cls || ""}"><span>${label}</span><input type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="${o.done ? "done" : "next"}" ${attrs} placeholder="–" id="${id}" ${dat}${o.desc ? ` aria-describedby="${o.desc}"` : ""} value="${esc(fmtVal(val))}" class="${val == null ? "" : "has"}${isRng(val) ? " rng" : ""}"></label>`;
+  }
+  function dateHTML(label, dat, val, o = {}) {
+    const id = `${o.pre || "i"}-${dat.replace(/[^a-zA-Z0-9]/g, "-")}`;
+    return `<label class="f date"><span>${label}</span><input type="date" id="${id}" ${dat} value="${val || ""}" class="${val ? "has" : ""}"></label>`;
+  }
+
+  /* ---------- Navigation ---------- */
+  function go(s, opts = {}) {
+    if (!SCREENS[s]) s = "uebersicht";
+    if (screen === s) {
+      if (opts.tap) window.scrollTo({ top: 0, behavior: reduceMQ.matches ? "auto" : "smooth" });
+      return;
+    }
+    if (screen) scrollPos[screen] = window.scrollY;
+    screen = s;
+    lsSet(LS.screen, s);
+    document.querySelectorAll("section[data-screen]").forEach((el) => { el.hidden = el.dataset.screen !== s; });
+    document.querySelectorAll("nav [data-go], .topbar [data-go]").forEach((b) => {
+      if (b.dataset.go === s) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    $("tbTitle").textContent = SCREENS[s];
+    try { if (location.hash !== "#" + s) history.replaceState(null, "", "#" + s); } catch (e) {}
+    window.scrollTo(0, scrollPos[s] || 0);
+    if (s === "uebersicht" && result) drawChart();
+  }
+  window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (SCREENS[h]) go(h); });
+
+  document.addEventListener("click", (e) => {
+    const gEl = e.target.closest("[data-go]");
+    if (gEl) { e.preventDefault(); if (sheet) closeSheet(true); go(gEl.dataset.go, { tap: true }); return; }
+    const fx = e.target.closest("[data-fix]");
+    if (fx) {
+      const el = $(fx.dataset.for);
+      if (el) { el.value = fx.dataset.fix; el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true })); el.focus(); }
+      return;
+    }
+    const act = e.target.closest("[data-act]");
+    if (act) {
+      const a = act.dataset.act;
+      if (a === "retry") { if (mode === "db") doSave(); }
+      else if (a === "reset") resetGrades();
+      else if (a === "export") exportBackup();
+      else if (a === "import") { const f = $("importFile"); if (f) { f.value = ""; f.click(); } }
+      else if (a === "termmore") { termAll = !termAll; renderTermine(); const b = $("ovTermine").querySelector('[data-act="termmore"]'); if (b) b.focus(); }
+      else if (a === "del") deleteNote(act.dataset.id);
+      return;
+    }
+    const tEl = e.target.closest("[data-term]");
+    if (tEl) { openTerm(tEl.dataset.term); return; }
+    const sh = e.target.closest("[data-sh]");
+    if (sh) { detailAction(sh); return; }
+    const co = e.target.closest("[data-course]");
+    if (co) openCourse(co.dataset.course, semTab);
+  });
+
+  /* ---------- Segment-Schalter ---------- */
+  function buildSeg(el, items, attr, tabs) {
+    el.style.setProperty("--n", items.length);
+    el.innerHTML = '<span class="seg-ind" aria-hidden="true"></span>' + items.map((it) =>
+      `<button type="button"${tabs ? ' role="tab" aria-controls="md"' : ""} data-${attr}="${it.v}">${it.label}${it.now ? '<span class="now" aria-hidden="true"></span><span class="sr"> (aktuelles Halbjahr)</span>' : ""}</button>`).join("");
+  }
+  function markSeg(el, attr, cur, tabs) {
+    el.querySelectorAll(`[data-${attr}]`).forEach((b, i) => {
+      const on = b.dataset[attr] === String(cur);
+      if (tabs) { b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; } else b.setAttribute("aria-pressed", String(on));
+      if (on) el.style.setProperty("--i", i);
+    });
+  }
+  function buildSegs() {
+    buildSeg($("semSeg"), SEM_TABS.map((t) => ({ v: t, label: t, now: t === SEMS[nowSem] })), "sem", true);
+    buildSeg($("planSeg"), [{ v: "ziel", label: "Ziel" }, { v: "prognosen", label: "Prognosen" }], "plan", false);
+    buildSeg($("bogenSeg"), SEG_LABEL.map((l, i) => ({ v: i, label: l })), "s", false);
+  }
+  function setSem(t, focus) {
+    semTab = t; lsSet(LS.sem, t);
+    markSeg($("semSeg"), "sem", semTab, true);
+    renderNotenBody(); renderOutputs(); renderDetail();
+    if (focus) { const el = document.querySelector(`#semSeg [data-sem="${semTab}"]`); if (el) el.focus(); }
+  }
+  $("semSeg").addEventListener("click", (e) => { const b = e.target.closest("[data-sem]"); if (b) setSem(b.dataset.sem); });
+  $("semSeg").addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const i = SEM_TABS.indexOf(semTab);
+    setSem(SEM_TABS[(i + (e.key === "ArrowRight" ? 1 : SEM_TABS.length - 1)) % SEM_TABS.length], true);
+  });
+
+  /* ---------- Kopfzeilen ---------- */
+  function renderLead() {
+    const s = state.settings;
+    $("sideWho").textContent = `Mathe LK · Erdkunde LK · ${COURSES[s.abi3].name} (3.) · ${COURSES[s.abi4].name} (4., mündlich)`;
+    const ok = ["D", "E"].includes(s.abi3) || ["D", "E"].includes(s.abi4);
+    const msg = ok ? "" : "Deutsch oder Englisch muss 3. oder 4. Abifach sein, sonst fehlt das sprachliche Aufgabenfeld.";
+    $("ovWarn").hidden = ok; $("ovWarn").textContent = msg;
+    const w = $("setWarn");
+    if (w) { w.hidden = ok; w.textContent = msg; }
+  }
+
+  /* ---------- Übersicht ---------- */
+  function whyInvalid(o) {
+    let why = `${o.def} von ${o.defMax} Defiziten`;
+    if (o.ldef > 3) why = `${o.ldef} LK-Defizite (höchstens 3)`;
+    if (o.zeroMand) why = "Pflichtkurs mit 0 Punkten";
+    if (o.EI < 200) why = "unter 200 Punkten in Block I";
+    return why;
+  }
+  /* Defizit-Konto: ein Feld pro erlaubtem Defizit, gefüllt pro tatsächlichem. */
+  function kontoHTML(sc, big) {
+    const o = sc.opt;
+    const n = Math.max(o.defMax, o.def);
+    let cells = "";
+    for (let i = 0; i < n; i++) cells += `<span class="cell${i < o.def ? (i < o.ldef ? " lk" : " on") : ""}${i >= o.defMax ? " over" : ""}"></span>`;
+    const lkTxt = o.ldef ? ` · davon ${o.ldef} im LK (höchstens 3)` : "";
+    let st;
+    if (!o.valid) st = `<span class="ks bad-t">Zulassung gefährdet: ${whyInvalid(o)}</span>`;
+    else if (!sc.b2.cond) st = '<span class="ks bad-t">Abi-Mindestpunkte verfehlt</span>';
+    else st = '<span class="ks ok-t">Zulassung ok</span>';
+    return `<div class="konto${big ? " big" : ""}"><span class="kl">Defizite <b>${o.def}</b> von ${o.defMax}${lkTxt}</span><span class="cells" role="img" aria-label="${o.def} von ${o.defMax} erlaubten Defiziten belegt">${cells}</span>${st}</div>`;
+  }
+  const scalePos = (n) => { const v = n == null ? 4 : Math.max(1, Math.min(4, n)); return ((v - 1) / 3) * 100; };
+  function scaleHTML(lo, hi, mid, ziel) {
+    const pl = scalePos(lo), ph = scalePos(hi), pm = scalePos(mid), pg = scalePos(ziel);
+    let s = '<span class="track"></span>' + [2, 3].map((n) => `<span class="tick" style="left:${scalePos(n)}%"></span>`).join("");
+    s += `<span class="band" style="left:${pl}%;width:${Math.max(1.5, ph - pl)}%"></span>`;
+    s += `<span class="goal${pg < 8 ? " l" : pg > 92 ? " r" : ""}" style="left:${pg}%"><span>Ziel ${nf(ziel, 1)}</span></span>`;
+    s += `<span class="dot" style="left:${pm}%"></span>`;
+    const labs = [];
+    if (ph - pl < 10) labs.push({ x: (pl + ph) / 2, t: noteStr(lo) === noteStr(hi) ? noteStr(lo) : `${noteStr(lo)}–${noteStr(hi)}`, cls: "bv" });
+    else { labs.push({ x: pl, t: noteStr(lo), cls: "bv" }); labs.push({ x: ph, t: noteStr(hi), cls: "bv" }); }
+    [{ x: 0, t: "1,0" }, { x: 100, t: "4,0" }].forEach((e) => { if (labs.every((l) => Math.abs(l.x - e.x) > 10)) labs.push({ ...e, cls: "tk" }); });
+    s += labs.map((l) => `<span class="sl ${l.cls}${l.x < 4 ? " l" : l.x > 96 ? " r" : ""}" style="left:${l.x}%">${l.t}</span>`).join("");
+    return s;
+  }
+  function renderOverview() {
+    const [b, m, g] = result.sc;
+    const ziel = state.settings.ziel;
+    const nEl = $("ovNote");
+    nEl.textContent = noteStr(shownNote(m));
+    nEl.classList.toggle("fail", m.note == null);
+    $("ovWords").textContent = shownNote(m) != null ? `in Worten: ${inWords(shownNote(m))}` : "";
+    $("ovPts").textContent = `${pf(m.total)} von 900 Punkten`;
+    const sc = $("ovScale");
+    sc.innerHTML = scaleHTML(shownNote(g), shownNote(b), shownNote(m), ziel);
+    sc.setAttribute("aria-label", `Spanne ${noteStr(shownNote(g))} bis ${noteStr(shownNote(b))}, Mittelwert ${noteStr(shownNote(m))}, Ziel ${nf(ziel, 1)}`);
+    $("ovKonto").innerHTML = kontoHTML(m, false);
+
+    const ist = result.ist, tr = result.sc[3];
+    $("ovIst").innerHTML = ist.avg == null
+      ? `<span class="label">Dein Stand</span><div class="stat">–</div><p class="meta">Noch keine Klausur- oder SoMi-Noten.</p><button type="button" class="btn link" data-go="noten">Noten eintragen${ICON.chev}</button>`
+      : `<span class="label">Dein Stand</span><div class="stat">${nf(ist.avg, 1)}<span class="u">P.</span></div><p class="meta">aus ${ist.n} ${ist.n === 1 ? "Note" : "Noten"} <span class="nw">(Note ${ptsNote(ist.avg)})</span></p><p class="meta" title="Wenn es in jedem Fach so weiterläuft">Trend: <strong>${noteStr(shownNote(tr))}</strong></p>`;
+
+    const T = result.T;
+    const known = abiList(state).map((c) => examRes(state, c));
+    const knownSum = known.reduce((a, r) => a + (r != null ? r * 5 : 0), 0);
+    const open = known.filter((r) => r == null).length;
+    let lead, sub;
+    if (!open) {
+      lead = m.opt.EI + knownSum >= T ? "erreicht" : "verfehlt";
+      sub = `${pf(m.opt.EI + knownSum)} von ${T} nötigen Punkten`;
+    } else {
+      const per = (T - m.opt.EI - knownSum) / (5 * open);
+      if (per <= 0) { lead = "sicher"; sub = `Im Mittel reichen deine Kurse schon für ${T} von 900 Punkten.`; }
+      else if (per > 15) { lead = "–"; sub = `Im Mittel nicht erreichbar, bestenfalls ${noteStr(abiNote(m.opt.EI + knownSum + open * 75))}.`; }
+      else { lead = `${nf(per, 1)}<span class="u">P.</span>`; sub = `pro Abiprüfung nötig (Mittel)</p><p class="meta">${T} von 900 Punkten`; }
+    }
+    $("ovZiel").innerHTML = `<span class="label">Ziel ${nf(ziel, 1)}</span><div class="stat">${lead}</div><p class="meta">${sub}</p><button type="button" class="btn link" data-go="planung">Ziel planen${ICON.chev}</button>`;
+
+    const cols = [b, m, g];
+    const rows = [
+      ["Abi-Note", (x) => `<span class="${x.note == null ? "fail" : ""}">${noteStr(shownNote(x))}</span>`, "big"],
+      ["Gesamtpunkte", (x) => pf(x.total)],
+      ["Block I (Kurse)", (x) => x.opt.EI],
+      ["Block II (Abi)", (x) => pf(x.b2.EII)],
+      ["Abi Ø (P.)", (x) => pf(x.b2.vals.reduce((p, q) => p + q, 0) / 4)],
+      ["Kursschnitt (P.)", (x) => nf(x.opt.ratio, 2)],
+      ["Defizite", (x) => `${x.opt.def}/${x.opt.defMax}`]
+    ];
+    $("ovCmp").innerHTML = `<thead><tr><th scope="col"><span class="sr">Wert</span></th><th scope="col">Schlecht</th><th scope="col" class="mid">Mittel</th><th scope="col">Gut</th></tr></thead><tbody>` +
+      rows.map(([l, f, cls]) => `<tr${cls ? ` class="${cls}"` : ""}><th scope="row">${l}</th>${cols.map((x, i) => `<td class="${i === 1 ? "mid" : ""}">${f(x)}</td>`).join("")}</tr>`).join("") + "</tbody>";
+    const bad = cols.map((x, i) => ({ x, i })).filter((o) => !o.x.opt.valid || !o.x.b2.cond);
+    const w = $("ovCmpWarn");
+    w.hidden = !bad.length;
+    w.textContent = bad.length ? `Zulassung oder Mindestpunkte gefährdet im Fall: ${bad.map((o) => SEG_LABEL[o.i]).join(", ")}. Details im Kursbogen.` : "";
+    renderTermine();
+  }
+
+  /* ---------- Klausurtermine ---------- */
+  function allTermine() {
+    const out = [];
+    for (const c of orderedCourses()) {
+      if (c === "PK") continue;
+      for (const sem of activeSems(c, state)) {
+        const g = state.grades[c] && state.grades[c][sem];
+        if (!g || !g.kd) continue;
+        const kc = klausurCount(c, sem, state);
+        for (let k = 0; k < kc; k++) {
+          if (!g.kd[k]) continue;
+          out.push({ key: `k|${c}|${sem}`, c, sem, k, kc, d: g.kd[k], has: g.k[k] != null || g.z != null, abi: false });
+        }
+      }
+    }
+    abiList(state).forEach((c, i) => { const a = state.abi[c]; if (a && a.d) out.push({ key: `a|${c}`, c, i, d: a.d, has: a.res != null, abi: true }); });
+    return out.sort((x, y) => x.d.localeCompare(y.d));
+  }
+  function renderTermine() {
+    const box = $("ovTermine");
+    const list = allTermine();
+    const missing = list.filter((t) => { const n = dayDiff(t.d); return n < 0 && n >= -60 && !t.has; });
+    const upcoming = list.filter((t) => dayDiff(t.d) >= 0);
+    const rows = [...missing, ...upcoming];
+    if (rows.length <= 4) termAll = false;
+    const more = rows.length > 4 ? `<button type="button" class="btn link sm" data-act="termmore" aria-expanded="${termAll}">${termAll ? "Weniger" : `Alle ${rows.length}`}</button>` : "";
+    const head = `<div class="chead"><h2>Klausurtermine</h2>${more}</div>`;
+    if (!rows.length) {
+      box.innerHTML = head + `<p class="help">${list.length ? "Gerade steht keine Klausur an." : "Noch keine Termine. Trag sie im Fach unter „Klausurtermine“ ein, dann stehen hier die nächsten."}</p><button type="button" class="btn link" data-go="noten">Termine eintragen${ICON.chev}</button>`;
+      return;
+    }
+    const shown = termAll ? rows : rows.slice(0, 4);
+    box.innerHTML = head + `<ul class="tlist">${shown.map((t) => {
+      const n = dayDiff(t.d), x = parseISO(t.d);
+      const miss = n < 0;
+      const title = esc(COURSES[t.c].name);
+      const sub = t.abi ? `${t.i + 1}. Abiturprüfung · ${t.i < 3 ? "schriftlich" : "mündlich"}` : `${t.kc === 1 ? "Klausur" : `Klausur ${t.k + 1}`} · ${t.sem}`;
+      const right = miss ? '<span class="tr miss">Note fehlt</span>' : `<span class="tr${n <= 7 ? " soon" : ""}">${relDay(n)}</span>`;
+      return `<li><button type="button" class="trow" data-term="${t.key}"><span class="td" aria-hidden="true"><b>${x.getDate()}</b><span>${MON[x.getMonth()]}</span></span><span class="tt"><strong>${title}</strong><span><span class="sr">${fmtDate(t.d)}, </span>${sub}</span></span>${right}</button></li>`;
+    }).join("")}</ul>`;
+  }
+  function openTerm(key) {
+    const [kind, c, sem] = key.split("|");
+    if (kind === "a") {
+      if (semTab !== "Abitur") setSem("Abitur");
+      go("noten");
+      const el = document.querySelector(`input[data-f="ad"][data-c="${c}"]`);
+      if (el) el.closest("li").scrollIntoView({ block: "center" });
+      return;
+    }
+    if (semTab !== sem) setSem(sem);
+    go("noten");
+    openCourse(c, sem);
+  }
+
+  /* ---------- Noten ---------- */
+  function renderNotenBody() {
+    const box = $("notenBody");
+    if (SEMS.includes(semTab)) {
+      box.innerHTML = '<p class="help">Tippe auf ein Fach für Noten und Klausurtermine. K = Klausur, S = SoMi-Quartal. Leere Felder rechnet der Rechner mit deiner Prognose.</p><ul class="list" id="courseList"></ul>';
+      return;
+    }
+    const rows = abiList(state).map((c, i) => {
+      const a = state.abi[c] || {};
+      const [lo, hi] = examRange(state, c);
+      const res = examRes(state, c);
+      const e = `erA-${c}`;
+      return `<li class="frow" data-eg><div class="fl"><span class="t">${esc(COURSES[c].name)}</span><span class="s">${i + 1}. Abifach · ${i < 3 ? "schriftlich" : "mündlich"}</span></div>
+        <div class="ff">${fieldHTML("von", `data-f="alo" data-c="${c}"`, lo, { desc: e })}${fieldHTML("bis", `data-f="ahi" data-c="${c}"`, hi, { desc: e })}${fieldHTML("Ergebnis", `data-f="ares" data-c="${c}"`, res, { cls: "z", desc: e, done: true })}${dateHTML("Termin", `data-f="ad" data-c="${c}"`, a.d || null)}</div>
+        <div class="fr"><span class="val" id="av-${c}">–</span><span class="st" id="as-${c}"></span></div><p class="ferr" id="${e}" role="alert" hidden></p></li>`;
+    }).join("");
+    box.innerHTML = `<p class="help">Prognose und Termine für deine vier Prüfungen. Jeder Prüfungspunkt zählt fünffach. Trag das echte Ergebnis ein, sobald du es kennst.</p><ul class="list">${rows}</ul>`;
+  }
+  function enteredParts(c, sem) {
+    const out = [];
+    if (c === "PK") {
+      const off = PK_PERIODS[state.settings.pkPeriod].indexOf(sem) * 2, p = state.pk;
+      if (p.s[off] != null) out.push("S1 " + fmtVal(p.s[off]));
+      if (p.s[off + 1] != null) out.push("S2 " + fmtVal(p.s[off + 1]));
+      if (off === 2) {
+        if (p.doku != null) out.push("Doku " + fmtVal(p.doku));
+        if (p.z != null) out.push("Jahresnote " + p.z);
+      }
+      return out;
+    }
+    const g = state.grades[c] && state.grades[c][sem];
+    if (!g) return out;
+    const kc = klausurCount(c, sem, state);
+    for (let i = 0; i < kc; i++) if (g.k[i] != null) out.push((kc === 1 ? "K " : `K${i + 1} `) + fmtVal(g.k[i]));
+    g.s.forEach((x, j) => { if (x != null) out.push(`S${j + 1} ` + fmtVal(x)); });
+    if (g.z != null) out.push("Zeugnis " + g.z);
+    return out;
+  }
+  function termNote(c, sem) {
+    if (c === "PK") return "";
+    const g = state.grades[c] && state.grades[c][sem];
+    if (!g || !g.kd || g.z != null) return "";
+    const kc = klausurCount(c, sem, state);
+    const out = [];
+    for (let k = 0; k < kc; k++) {
+      const d = g.kd[k];
+      if (!d || g.k[k] != null) continue;
+      const lab = kc === 1 ? "K" : `K${k + 1}`;
+      out.push(dayDiff(d) < 0 ? `<span class="miss">${lab} Note fehlt</span>` : `${lab} am ${fmtDM(d)}`);
+    }
+    return out.join(" · ");
+  }
+  function renderCourseList() {
+    const box = $("courseList");
+    if (!box || !SEMS.includes(semTab) || !result) return;
+    const sem = semTab, mid = result.sc[1];
+    const byKey = new Map(mid.items.map((i) => [i.key, i]));
+    const wide = isWide();
+    box.innerHTML = coursesIn(sem).map((c) => {
+      const it = c === "PK" ? byKey.get("PK") : byKey.get(`${c}|${sem}`);
+      if (!it) return "";
+      const parts = enteredParts(c, sem);
+      const [lo, hi] = state.prog[c];
+      const ez = notesFor(c, sem).length;
+      const tm = termNote(c, sem);
+      let line = parts.length ? esc(parts.join(" · ")) : `<span class="muted">Prognose ${pf(Math.min(lo, hi))}–${pf(Math.max(lo, hi))}</span>`;
+      if (tm) line += ` · ${tm}`;
+      if (ez) line += ` <span class="muted">· ${ez} ${ez === 1 ? "Einzelnote" : "Einzelnoten"}</span>`;
+      const inc = mid.opt.included.has(it.key);
+      const st = !inc ? '<span class="st out">gestrichen</span>'
+        : it.final ? `<span class="st fin">${c === "PK" ? "Jahresnote" : "Zeugnis"} · Note ${ptsNote(it.pts)}</span>`
+        : `<span class="st">Note ${ptsNote(it.pts)}</span>`;
+      const cur = wide && c === mdSel ? ' aria-current="true"' : "";
+      return `<li><button type="button" class="row" data-course="${c}"${cur}><span class="rl"><span class="t">${esc(COURSES[c].name)}${badges(c)}</span><span class="g">${line}</span></span><span class="rr"><span class="val${it.final ? " fin" : ""}">${it.final ? "" : '<span class="ap">≈</span>'}${pf(r1(it.pts))}</span>${st}</span>${ICON.chev}</button></li>`;
+    }).join("");
+  }
+  function updateAbiResults() {
+    if (semTab !== "Abitur" || !result) return;
+    abiList(state).forEach((c, i) => {
+      const v = $("av-" + c), s = $("as-" + c);
+      if (!v) return;
+      const res = examRes(state, c);
+      v.innerHTML = res != null ? String(res) : `<span class="ap">≈</span>${pf(result.sc[1].b2.vals[i])}`;
+      s.textContent = res != null ? `= ${res * 5} Punkte` : "Mittelwert";
+    });
+  }
+  function openCourse(c, sem) {
+    if (isWide() && SEMS.includes(sem)) {
+      mdSel = c; lsSet(LS.sel, c);
+      renderCourseList(); renderDetail();
+      const row = document.querySelector(`#courseList [data-course="${c}"]`);
+      if (row) row.focus({ preventScroll: true });
+      return;
+    }
+    sheetReturn = c;
+    openSheet({ kind: "course", c, sem });
+  }
+
+  /* ---------- Fach-Detail (Sheet am Handy, Spalte am Desktop) ---------- */
+  function detailHTML(c, sem, pre) {
+    const inPane = pre === "pn";
+    const list = coursesIn(sem), i = list.indexOf(c);
+    const tags = tagText(c);
+    const eF = `${pre}ErF`, hF = `${pre}HpF`, eZ = `${pre}ErZ`, eP = `${pre}ErP`;
+    const o = { rng: true, pre, desc: `${eF} ${hF}` };
+    let fields = "", final = "", dates = "";
+    if (c === "PK") {
+      const off = PK_PERIODS[state.settings.pkPeriod].indexOf(sem) * 2, p = state.pk;
+      fields += fieldHTML("SoMi 1. Q.", `data-f="pks" data-i="${off}"`, p.s[off], o);
+      fields += fieldHTML("SoMi 2. Q.", `data-f="pks" data-i="${off + 1}"`, p.s[off + 1], o);
+      if (off === 2) {
+        fields += fieldHTML("Doku", 'data-f="pkd"', p.doku, o);
+        final = fieldHTML("Jahresnote", 'data-f="pkz"', p.z, { cls: "z", pre, desc: eZ, done: true });
+      }
+    } else {
+      const g = (state.grades[c] && state.grades[c][sem]) || { k: [null, null], s: [null, null], z: null, kd: [null, null] };
+      const kc = klausurCount(c, sem, state);
+      const kd = g.kd || [null, null];
+      for (let k = 0; k < kc; k++) {
+        const lab = kc === 1 ? "Klausur" : `Klausur ${k + 1}`;
+        fields += fieldHTML(lab, `data-f="k" data-c="${c}" data-sem="${sem}" data-i="${k}"`, g.k[k], o);
+        dates += dateHTML(lab, `data-f="kd" data-c="${c}" data-sem="${sem}" data-i="${k}"`, kd[k], { pre });
+      }
+      fields += fieldHTML("SoMi 1. Q.", `data-f="s" data-c="${c}" data-sem="${sem}" data-i="0"`, g.s[0], o);
+      fields += fieldHTML("SoMi 2. Q.", `data-f="s" data-c="${c}" data-sem="${sem}" data-i="1"`, g.s[1], o);
+      final = fieldHTML("Zeugnis", `data-f="z" data-c="${c}" data-sem="${sem}"`, g.z, { cls: "z", pre, desc: eZ, done: true });
+    }
+    const [lo, hi] = state.prog[c];
+    const ez = notesFor(c, sem);
+    const pkTxt = c === "PK" && !final ? `<p class="help">Die Projektkurs-Note steht erst am Ende fest. Doku und Jahresnote trägst du in ${PK_PERIODS[state.settings.pkPeriod][1]} ein.</p>` : "";
+    const head = `${inPane ? "" : '<div class="sh-grab" aria-hidden="true"></div>'}
+      <header class="sh-head">
+        <div class="sh-title"><h2 id="${inPane ? "pnTitle" : "shTitle"}">${esc(COURSES[c].name)}</h2><p>${sem}${tags.length ? " · " + tags.join(" · ") : ""}</p></div>
+        <div class="sh-btns">
+          <button type="button" class="iconbtn" data-sh="prev" aria-label="Voriges Fach"${i <= 0 ? " disabled" : ""}>${ICON.left}</button>
+          <button type="button" class="iconbtn" data-sh="next" aria-label="Nächstes Fach"${i >= list.length - 1 ? " disabled" : ""}>${ICON.right}</button>
+          ${inPane ? "" : `<button type="button" class="iconbtn" data-sh="close" aria-label="Schließen">${ICON.x}</button>`}
+        </div>
+      </header>`;
+    return `${head}
+      <div class="sh-body">
+        <div class="fg" data-eg><div class="fgrid">${fields}</div><p class="ferr" id="${eF}" role="alert" hidden></p><p class="help" id="${hF}">Spanne: 11-12, am Handy 11,12</p></div>
+        <div class="res" id="${pre}Res"></div>
+        ${pkTxt}
+        ${dates ? `<section class="sh-sec"><h3>Klausurtermine</h3><div class="tgrid">${dates}</div></section>` : ""}
+        ${final ? `<div class="fg sh-sec" data-eg><div class="zline one">${final}<p class="help">Sobald die ${c === "PK" ? "Jahresnote" : "Zeugnisnote"} feststeht, zählt nur sie.</p></div><p class="ferr" id="${eZ}" role="alert" hidden></p></div>` : ""}
+        <details class="prog sh-sec" id="${pre}Prog"><summary>Prognose für leere Felder <span class="sv"><span id="${pre}ProgSv">${pf(Math.min(lo, hi))}–${pf(Math.max(lo, hi))}</span>${ICON.chev}</span></summary>
+          <div class="fg" data-eg><div class="zline">${fieldHTML("von", `data-f="lo" data-c="${c}"`, lo, { pre, desc: eP })}${fieldHTML("bis", `data-f="hi" data-c="${c}"`, hi, { pre, desc: eP, done: true })}<p class="help">Gilt für alle Halbjahre dieses Fachs.</p></div><p class="ferr" id="${eP}" role="alert" hidden></p></div>
+        </details>
+        <section class="sh-sec">
+          <h3>Einzelnoten in ${sem}</h3>
+          ${ez.length ? `<ul class="mini">${ez.map((n) => `<li><span>${fmtDate(n.d)}</span><span>${esc(n.t || "ohne Titel")}</span><strong>${fmtP(n.p)}</strong></li>`).join("")}</ul>` : '<p class="help">Noch keine Einzelnoten in diesem Halbjahr.</p>'}
+          <button type="button" class="btn" data-sh="addnote">${ICON.plus}Einzelnote hinzufügen</button>
+        </section>
+      </div>`;
+  }
+  function updateRes(pre, c, sem) {
+    const box = $(`${pre}Res`);
+    if (!box || !result) return;
+    const mid = result.sc[1];
+    const it = mid.items.find((x) => x.key === (c === "PK" ? "PK" : `${c}|${sem}`));
+    if (!it) { box.innerHTML = ""; return; }
+    let range = "";
+    if (!it.final) {
+      const r0 = c === "PK" ? pkNote(state, 0, 7, 1) : semNote(state, c, sem, 0, 7, 1);
+      const r2 = c === "PK" ? pkNote(state, 2, 7, 1) : semNote(state, c, sem, 2, 7, 1);
+      const a = r1(r0.v), b = r1(r2.v);
+      if (r0.rng && b > a) range = `Spanne ${pf(a)}–${pf(b)}`;
+    }
+    const inc = mid.opt.included.has(it.key);
+    const known = it.final ? `${c === "PK" ? "Jahresnote" : "Zeugnisnote"} steht fest` : it.known > 0 ? `${it.known} von ${it.total} Noten eingetragen` : "nur Prognose";
+    box.innerHTML = `<div class="res-top"><span>${c === "PK" ? "Projektkurs-Note" : "Halbjahresnote"}</span><strong>${it.final ? "" : '<span class="ap">≈</span>'}${pf(r1(it.pts))}</strong></div>
+      <p class="res-meta">${[range, known, `Note ${ptsNote(it.pts)}`].filter(Boolean).map((x) => `<span class="nw">${x}</span>`).join(" · ")}</p>
+      <p class="res-inc ${inc ? "ok" : "out"}">${inc ? "Wird eingebracht" : "Wird im Moment gestrichen"}${c === "PK" ? " · zählt doppelt" : ""}</p>`;
+    const sv = $(`${pre}ProgSv`);
+    if (sv) { const [lo, hi] = state.prog[c]; sv.textContent = `${pf(Math.min(lo, hi))}–${pf(Math.max(lo, hi))}`; }
+  }
+  function updateDetails() {
+    if (sheet && sheet.kind === "course") updateRes("sh", sheet.c, sheet.sem);
+    if (isWide() && mdSel && SEMS.includes(semTab)) updateRes("pn", mdSel, semTab);
+  }
+  function renderDetail() {
+    const md = $("md"), pane = $("pane");
+    const on = isWide() && SEMS.includes(semTab);
+    md.classList.toggle("haspane", on);
+    if (!on) { pane.innerHTML = ""; return; }
+    const list = coursesIn(semTab);
+    if (!list.includes(mdSel)) mdSel = list[0];
+    pane.innerHTML = detailHTML(mdSel, semTab, "pn");
+    updateRes("pn", mdSel, semTab);
+  }
+  function flashRes(el) {
+    const scope = el.closest("#pane, #sheet");
+    const box = scope && scope.querySelector(".res");
+    if (!box) return;
+    box.classList.add("pulse");
+    requestAnimationFrame(() => requestAnimationFrame(() => box.classList.remove("pulse")));
+  }
+  function stepCourse(inPane, dir) {
+    const cur = inPane ? { c: mdSel, sem: semTab } : sheet;
+    if (!cur) return;
+    const list = coursesIn(cur.sem), j = list.indexOf(cur.c) + dir;
+    if (j < 0 || j >= list.length) return;
+    const c = list[j];
+    if (inPane) { mdSel = c; lsSet(LS.sel, c); renderCourseList(); renderDetail(); }
+    else {
+      sheet = { kind: "course", c, sem: cur.sem }; sheetReturn = c; renderSheet();
+      const body = dlg.querySelector(".sh-body"); if (body) body.scrollTop = 0;
+    }
+    /* Fokus bleibt auf dem Pfeil, obwohl der Inhalt neu gezeichnet wurde. */
+    const scope = inPane ? $("pane") : dlg;
+    const want = scope.querySelector(`[data-sh="${dir > 0 ? "next" : "prev"}"]`);
+    const alt = scope.querySelector(`[data-sh="${dir > 0 ? "prev" : "next"}"]`);
+    const f = want && !want.disabled ? want : alt;
+    if (f) f.focus();
+    announce(`${COURSES[c].name}, ${cur.sem}`);
+  }
+  function detailAction(b) {
+    const a = b.dataset.sh, inPane = !!b.closest("#pane");
+    if (a === "close") closeSheet();
+    else if (a === "cancel") backFromNote();
+    else if (a === "prev" || a === "next") stepCourse(inPane, a === "next" ? 1 : -1);
+    else if (a === "addnote") {
+      const cur = inPane ? { c: mdSel, sem: semTab } : sheet;
+      if (!cur) return;
+      openSheet({ kind: "note", c: cur.c, back: inPane ? null : { c: cur.c, sem: cur.sem } });
+    }
+  }
+
+  /* ---------- Sheet ---------- */
+  const dlg = $("sheet");
+  let closeTimer = 0;
+  function openSheet(s) {
+    sheet = s;
+    clearTimeout(closeTimer);
+    dlg.classList.remove("closing");
+    dlg.style.transform = ""; dlg.style.transition = "";
+    renderSheet();
+    if (!dlg.open) { try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); } }
+    const body = dlg.querySelector(".sh-body");
+    if (body) body.scrollTop = 0;
+    if (s.kind === "note") { const p = $("nfP"); if (p) p.focus(); }
+  }
+  function renderSheet() {
+    if (!sheet) return;
+    $("shBody").innerHTML = sheet.kind === "course" ? detailHTML(sheet.c, sheet.sem, "sh") : noteSheetHTML(sheet);
+    if (sheet.kind === "course") updateRes("sh", sheet.c, sheet.sem);
+  }
+  function closeSheet(instant) {
+    if (!dlg.open) { sheet = null; return; }
+    clearTimeout(closeTimer);
+    dlg.style.transform = ""; dlg.style.transition = "";
+    if (instant) { finishClose(); return; }
+    dlg.classList.add("closing");
+    closeTimer = setTimeout(finishClose, reduceMQ.matches ? 160 : 210);
+  }
+  function finishClose() {
+    clearTimeout(closeTimer);
+    dlg.classList.remove("closing");
+    try { dlg.close(); } catch (e) { dlg.removeAttribute("open"); }
+  }
+  function backFromNote() {
+    if (sheet && sheet.kind === "note" && sheet.back) {
+      const b = sheet.back;
+      openSheet({ kind: "course", c: b.c, sem: b.sem });
+      const btn = dlg.querySelector('[data-sh="addnote"]');
+      if (btn) btn.focus();
+    } else closeSheet();
+  }
+  dlg.addEventListener("cancel", (e) => { e.preventDefault(); if (sheet && sheet.kind === "note" && sheet.back) backFromNote(); else closeSheet(); });
+  dlg.addEventListener("close", () => {
+    const ret = sheetReturn;
+    sheet = null; sheetReturn = null;
+    dlg.classList.remove("closing"); dlg.style.transform = ""; dlg.style.transition = "";
+    $("shBody").innerHTML = "";
+    if (pendingRemote) { const r = pendingRemote; pendingRemote = null; applyRemote(r); }
+    if (ret) { const row = document.querySelector(`[data-course="${ret}"]`); if (row) row.focus({ preventScroll: true }); }
+  });
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) closeSheet(); });
+
+  /* Wischen nach unten schließt das Sheet (nur am Handy). */
+  (function initDrag() {
+    let dragging = false, pid = null, startY = 0, dy = 0, t0 = 0;
+    dlg.addEventListener("pointerdown", (e) => {
+      if (!phoneMQ.matches || !sheet || dragging) return;
+      if (!e.target.closest(".sh-grab, .shwrap > .sh-head") || e.target.closest("button")) return;
+      dragging = true; pid = e.pointerId; startY = e.clientY; dy = 0; t0 = performance.now();
+      try { dlg.setPointerCapture(pid); } catch (er) {}
+      dlg.style.transition = "none";
+    });
+    dlg.addEventListener("pointermove", (e) => {
+      if (!dragging || e.pointerId !== pid) return;
+      const raw = e.clientY - startY;
+      dy = raw >= 0 ? raw : -Math.pow(-raw, 0.6); /* nach oben gedämpft */
+      dlg.style.transform = `translateY(${dy}px)`;
+    });
+    const end = (e, cancelled) => {
+      if (!dragging || e.pointerId !== pid) return;
+      dragging = false;
+      try { dlg.releasePointerCapture(pid); } catch (er) {}
+      const v = dy / Math.max(1, performance.now() - t0);
+      const h = dlg.getBoundingClientRect().height || 1;
+      if (!cancelled && dy > 8 && (dy > h * 0.25 || v > 0.11)) closeSheet();
+      else { dlg.style.transition = ""; dlg.style.transform = ""; }
+    };
+    dlg.addEventListener("pointerup", (e) => end(e, false));
+    dlg.addEventListener("pointercancel", (e) => end(e, true));
+  })();
+
+  function noteSheetHTML(s) {
+    const opts = orderedCourses().map((c) => `<option value="${c}"${c === s.c ? " selected" : ""}>${esc(COURSES[c].name)}</option>`).join("");
+    return `<div class="sh-grab" aria-hidden="true"></div>
+      <header class="sh-head">
+        <div class="sh-title"><h2 id="shTitle">Neue Einzelnote</h2><p>Zählt nicht in die Rechnung</p></div>
+        <div class="sh-btns"><button type="button" class="iconbtn" data-sh="cancel" aria-label="${s.back ? "Zurück zum Fach" : "Abbrechen"}">${ICON.x}</button></div>
+      </header>
+      <form class="sh-body nform" id="noteForm" novalidate>
+        <label class="sfield">Fach<select id="nfC">${opts}</select></label>
+        <label class="sfield">Punkte<input id="nfP" type="text" inputmode="decimal" maxlength="9" placeholder="z. B. 12 oder 11-12" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-describedby="nfErr"></label>
+        <p class="formerr" id="nfErr" role="alert" hidden></p>
+        <label class="sfield">Wofür<input id="nfT" type="text" maxlength="120" placeholder="z. B. Fahrradprüfung" autocomplete="off" enterkeyhint="done"></label>
+        <label class="sfield">Datum<input id="nfD" type="date" value="${todayISO()}"></label>
+        <div class="sh-actions"><button type="button" class="btn" data-sh="cancel">Abbrechen</button><button type="submit" class="btn primary">Eintragen</button></div>
+      </form>`;
+  }
+  dlg.addEventListener("submit", (e) => {
+    if (e.target.id !== "noteForm") return;
+    e.preventDefault();
+    const pEl = $("nfP"), err = $("nfErr");
+    const t = pEl.value.trim();
+    const r = parseCell(t);
+    if (r.bad || r.pend || r.v == null) {
+      markBad(pEl);
+      const er = t === "" ? { msg: "Trag die Punkte ein, zum Beispiel 12 oder 11-12." } : cellError(t);
+      err.innerHTML = `<span>${esc(er.msg)}</span>` + (er.fix ? `<button type="button" class="btn sm" data-fix="${esc(er.fix)}" data-for="nfP">${esc(er.fix)} eintragen</button>` : "");
+      err.hidden = false;
+      pEl.focus();
+      return;
+    }
+    const d = /^\d{4}-\d{2}-\d{2}$/.test($("nfD").value) ? $("nfD").value : todayISO();
+    const c = $("nfC").value;
+    state.notes = state.notes || [];
+    state.notes.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), c, p: r.v, t: $("nfT").value.trim().slice(0, 120), d });
+    const s = semOfDate(d);
+    if (logFS !== "all" && s !== logFS) logFS = s;
+    if (logFC !== "all" && logFC !== c) logFC = c;
+    const back = sheet && sheet.back;
+    renderLog(); renderOutputs(); renderDetail(); scheduleSave();
+    if (back) openSheet({ kind: "course", c: back.c, sem: back.sem }); else closeSheet();
+    toast("Einzelnote eingetragen");
+  });
+  dlg.addEventListener("input", (e) => {
+    if (e.target.id === "nfP") { unmark(e.target); const er = $("nfErr"); if (er) { er.hidden = true; er.innerHTML = ""; } }
+  });
+
+  /* ---------- Eingaben ---------- */
+  function ensureG(c, sem) {
+    state.grades[c] = state.grades[c] || {};
+    const g = state.grades[c][sem] = state.grades[c][sem] || { k: [null, null], s: [null, null], z: null, kd: [null, null] };
+    if (!g.kd) g.kd = [null, null];
+    return g;
+  }
+  function curVal(ds) {
+    const f = ds.f, i = Number(ds.i);
+    const g = state.grades[ds.c] && state.grades[ds.c][ds.sem];
+    const a = state.abi[ds.c] || { lo: 10, hi: 12, res: null };
+    switch (f) {
+      case "k": case "s": return g ? g[f][i] : null;
+      case "z": return g ? g.z : null;
+      case "pks": return state.pk.s[i];
+      case "pkd": return state.pk.doku;
+      case "pkz": return state.pk.z;
+      case "lo": return state.prog[ds.c][0];
+      case "hi": return state.prog[ds.c][1];
+      case "alo": return a.lo;
+      case "ahi": return a.hi;
+      case "ares": return a.res;
+      default: return null;
+    }
+  }
+  function setVal(ds, v) {
+    const f = ds.f, i = Number(ds.i);
+    if (f === "k" || f === "s") ensureG(ds.c, ds.sem)[f][i] = v;
+    else if (f === "z") ensureG(ds.c, ds.sem).z = v;
+    else if (f === "kd") ensureG(ds.c, ds.sem).kd[i] = v;
+    else if (f === "pks") state.pk.s[i] = v;
+    else if (f === "pkd") state.pk.doku = v;
+    else if (f === "pkz") state.pk.z = v;
+    else if (f === "lo") state.prog[ds.c][0] = v;
+    else if (f === "hi") state.prog[ds.c][1] = v;
+    else if (f === "alo" || f === "ahi" || f === "ares" || f === "ad") {
+      const cur = state.abi[ds.c] || { lo: 10, hi: 12, res: null, d: null };
+      if (f === "alo") cur.lo = v; else if (f === "ahi") cur.hi = v; else if (f === "ares") cur.res = v; else cur.d = v;
+      state.abi[ds.c] = cur;
+    }
+  }
+  document.addEventListener("input", (e) => {
+    const el = e.target;
+    if (!el.matches || !el.matches("input[data-f]")) return;
+    const ds = el.dataset, f = ds.f;
+    if (f === "kd" || f === "ad") {
+      const v = /^\d{4}-\d{2}-\d{2}$/.test(el.value) ? el.value : null;
+      setVal(ds, v);
+      el.classList.toggle("has", !!v);
+      queueOutputs(); scheduleSave();
+      return;
+    }
+    const t = el.value.trim();
+    let v;
+    if (ds.rng) {
+      el.classList.toggle("rng", t.length > 2);
+      const r = parseCell(t);
+      if (r.pend) { unmark(el); clearErr(el); return; }
+      if (r.bad) { markBad(el); const er = cellError(t); showErr(el, er.msg, er.fix); return; }
+      v = r.v;
+    } else {
+      const r = parseNum(t, f);
+      if (r.pend) { unmark(el); clearErr(el); return; }
+      if (r.bad) { markBad(el); showErr(el, numError(t, f).msg); return; }
+      v = r.v;
+    }
+    unmark(el); clearErr(el);
+    el.classList.toggle("has", v != null);
+    setVal(ds, v);
+    if (f === "lo" || f === "hi") {
+      document.querySelectorAll(`input[data-f="${f}"][data-c="${ds.c}"]`).forEach((x) => {
+        if (x === el) return;
+        x.value = fmtVal(v); x.classList.toggle("has", v != null); unmark(x);
+      });
+    }
+    queueOutputs();
+    scheduleSave();
+  });
+  /* Verlassen eines Felds: gültige Werte einheitlich anzeigen, ungültige zurücksetzen und sagen, was weiter gilt. */
+  document.addEventListener("change", (e) => {
+    const el = e.target;
+    if (!el.matches || !el.matches("input[data-f]")) return;
+    const ds = el.dataset, f = ds.f;
+    if (f === "kd" || f === "ad") return;
+    const t = el.value.trim();
+    const r = ds.rng ? parseCell(t) : parseNum(t, f);
+    if (r.pend || r.bad) {
+      const cur = curVal(ds);
+      const er = ds.rng ? cellError(t) : numError(t, f);
+      el.value = fmtVal(cur);
+      unmark(el);
+      el.classList.toggle("has", cur != null);
+      el.classList.toggle("rng", isRng(cur));
+      const keep = cur == null ? "Das Feld bleibt leer." : `Es gilt weiter ${fmtVal(cur)}.`;
+      showErr(el, `${er.msg} Nicht übernommen. ${keep}`, er.fix);
+      return;
+    }
+    if (r.v != null) el.value = fmtVal(r.v);
+    if (ds.rng) el.classList.toggle("rng", isRng(r.v));
+    flashRes(el);
+  });
+  /* Enter springt ins nächste Feld, ohne Animation. */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const el = e.target;
+    if (!el.matches || !el.matches('input[data-f]:not([type="date"])')) return;
+    e.preventDefault();
+    const scope = el.closest(".sh-body, .list") || document;
+    const ins = [...scope.querySelectorAll('input[data-f]:not([type="date"])')].filter((x) => x.offsetParent !== null);
+    const i = ins.indexOf(el);
+    if (i >= 0 && i < ins.length - 1) ins[i + 1].focus(); else el.blur();
+  });
+  /* Antippen markiert den Inhalt, damit man direkt überschreiben kann. */
+  document.addEventListener("focusin", (e) => {
+    const el = e.target;
+    if (el.matches && el.matches('input[data-f]:not([type="date"])') && el.value) setTimeout(() => { try { el.select(); } catch (er) {} }, 0);
+  });
+
+  /* ---------- Planung ---------- */
+  function renderPlanSeg() {
+    markSeg($("planSeg"), "plan", planTab, false);
+    $("planZiel").hidden = planTab !== "ziel";
+    $("planProg").hidden = planTab !== "prognosen";
+  }
+  $("planSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-plan]");
+    if (!b) return;
+    planTab = b.dataset.plan; lsSet(LS.plan, planTab);
+    renderPlanSeg();
+  });
+  function renderProgRows() {
+    $("progList").innerHTML = orderedCourses().map((c) => {
+      const [lo, hi] = state.prog[c];
+      const e = `erP-${c}`;
+      return `<li class="frow" data-eg><div class="fl"><span class="t">${esc(COURSES[c].name)}${badges(c)}</span></div>
+        <div class="ff">${fieldHTML("von", `data-f="lo" data-c="${c}"`, lo, { desc: e })}${fieldHTML("bis", `data-f="hi" data-c="${c}"`, hi, { desc: e })}</div>
+        <div class="fr"><span class="val" id="pv-${c}">${pf((Math.min(lo, hi) + Math.max(lo, hi)) / 2)}</span><span class="st">Mittelwert</span></div><p class="ferr" id="${e}" role="alert" hidden></p></li>`;
+    }).join("");
+  }
+  function updateProgMids() {
+    for (const c of COURSE_IDS) {
+      const el = $("pv-" + c);
+      if (!el) continue;
+      const [lo, hi] = state.prog[c];
+      el.textContent = pf((Math.min(lo, hi) + Math.max(lo, hi)) / 2);
+    }
+  }
+  function renderZiel() {
+    const ziel = state.settings.ziel;
+    $("zVal").textContent = nf(ziel, 1);
+    $("zBetter").disabled = ziel <= 1.0 + 1e-9;
+    $("zWorse").disabled = ziel >= 3.0 - 1e-9;
+    const T = result.T;
+    $("zielBig").innerHTML = `Für ${nf(ziel, 1)} brauchst du <strong>${T}</strong> von 900 Punkten.`;
+    const known = abiList(state).map((c) => examRes(state, c));
+    const knownSum = known.reduce((a, r) => a + (r != null ? r * 5 : 0), 0);
+    const open = known.filter((r) => r == null).length;
+    $("zielRows").innerHTML = [0, 1, 2].map((s) => {
+      const sc = result.sc[s];
+      let val, warn = "";
+      if (open === 0) val = sc.opt.EI + knownSum >= T ? "erreicht" : "verfehlt";
+      else {
+        const per = (T - sc.opt.EI - knownSum) / (5 * open);
+        val = per <= 0 ? "schon sicher" : `Ø ${nf(per, 1)} P. pro Prüfung`;
+        if (per > 15) warn = `<span class="zw">Nicht erreichbar, bestenfalls ${noteStr(abiNote(sc.opt.EI + knownSum + open * 75))}</span>`;
+      }
+      return `<div class="zrow"><span class="zl">${SC_LABEL[s]} (Block I: ${sc.opt.EI})</span><span class="zv">${val}</span>${warn}</div>`;
+    }).join("");
+    const needAvg = (T - result.sc[1].b2.EII) / 40;
+    const abiAvg = result.sc[1].b2.vals.reduce((a, b) => a + b, 0) / 4;
+    $("zielNote").innerHTML = needAvg > 15
+      ? `Mit deiner Abi-Prognose (Mittel, Ø ${pf(abiAvg)} P.) ist ${nf(ziel, 1)} auch mit 15 Punkten in jedem Kurs nicht erreichbar.`
+      : `Mit deiner Abi-Prognose (Mittel, Ø ${pf(abiAvg)} P.) brauchst du einen Kursschnitt von <strong>${nf(needAvg, 2)} P.</strong> Aktuell (Mittel): <strong>${nf(result.sc[1].opt.ratio, 2)} P.</strong>`;
+  }
+  function stepZiel(d) {
+    const z = Math.round((state.settings.ziel + d) * 10) / 10;
+    if (z < 1 - 1e-9 || z > 3 + 1e-9) return;
+    state.settings.ziel = z;
+    renderOutputs(); scheduleSave();
+  }
+  $("zBetter").addEventListener("click", () => stepZiel(-0.1));
+  $("zWorse").addEventListener("click", () => stepZiel(0.1));
+  function renderHebel() {
+    const heb = result.heb;
+    const max = Math.max(0.01, ...heb.map((h) => h.per));
+    $("bars").innerHTML = heb.map((h) => {
+      const label = h.c === "PK" ? "Projektkurs" : COURSES[h.c].short + (COURSES[h.c].lk ? " LK" : "");
+      const zero = h.per < 0.005;
+      return `<li class="${zero ? "zero" : ""}"><span class="bl" title="${esc(COURSES[h.c].name)}">${esc(label)}</span><span class="bt"><span class="bf" style="width:${Math.max(0, h.per) / max * 100}%"></span></span><span class="bv">${zero ? "0" : "+" + nf(h.per, 2)}</span></li>`;
+    }).join("") || '<li class="zero"><span class="bl">Alle Noten stehen fest.</span></li>';
+    const openExams = abiList(state).filter((c) => examRes(state, c) == null).length;
+    const zeroes = heb.filter((h) => h.per < 0.005).map((h) => (h.c === "PK" ? "Projektkurs" : COURSES[h.c].short));
+    $("hebNote").innerHTML = (openExams ? "Zum Vergleich: +1 Punkt in einer Abiprüfung = <strong>+5,00</strong>. " : "") +
+      (zeroes.length ? `${zeroes.join(", ")} ${zeroes.length === 1 ? "wird" : "werden"} im Moment komplett gestrichen, bessere Noten dort ändern nichts.` : "");
+  }
+
+  /* ---------- Kursbogen ---------- */
+  function renderBogen() {
+    markSeg($("bogenSeg"), "s", segS, false);
+    const sc = result.sc[segS];
+    const byKey = new Map(sc.items.map((i) => [i.key, i]));
+    const pkSems = PK_PERIODS[state.settings.pkPeriod];
+    const rows = orderedCourses().map((c) => {
+      const cells = SEMS.map((sem) => {
+        if (!activeSems(c, state).includes(sem)) return '<td class="na">–</td>';
+        if (c === "PK" && sem === pkSems[0]) return '<td class="na" title="Note erst am Ende">·</td>';
+        const it = c === "PK" ? byKey.get("PK") : byKey.get(`${c}|${sem}`);
+        const inc = sc.opt.included.has(it.key);
+        const cls = it.final ? "fin" : it.known > 0 ? "part" : "prog";
+        let txt = pf(r1(it.pts));
+        if (it.pts < 4.5) txt = `<span class="dv">${txt}</span>`;
+        if (c === "PK") txt += "×2";
+        if (!inc) txt = `(${txt})`;
+        return `<td class="${cls}${inc ? "" : " cut"}">${txt}</td>`;
+      }).join("");
+      const name = (c === "PK" ? "Projektkurs" : COURSES[c].short) + (COURSES[c].lk ? " LK" : "");
+      return `<tr><th scope="row" title="${esc(COURSES[c].name)}">${esc(name)}</th>${cells}</tr>`;
+    }).join("");
+    $("bogen").innerHTML = `<thead><tr><th scope="col">Kurs</th>${SEMS.map((s) => `<th scope="col">${s}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
+    const o = sc.opt;
+    $("bogenZul").innerHTML = `<div class="chead"><h2>Zulassung</h2><span class="meta">${SC_LABEL[segS]}</span></div>${kontoHTML(sc, true)}
+      <div class="strip"><div><span>Eingebracht</span><strong>${o.C} Kurse</strong></div><div><span>Block I</span><strong>${o.EI} von 600</strong></div><div><span>Kursschnitt</span><strong>${nf(o.ratio, 2)} P.</strong></div><div><span>Durchgehende NW</span><strong>${o.nwOpt ? esc(COURSES[o.nwOpt].name) : "–"}</strong></div></div>`;
+  }
+  $("bogenSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-s]");
+    if (!b) return;
+    segS = Number(b.dataset.s); lsSet(LS.seg, String(segS));
+    renderBogen();
+  });
+
+  /* ---------- Verlauf ---------- */
+  const QLABEL = (q) => `${SEMS[Math.floor(q / 2)]}, ${q % 2 + 1}. Quartal`;
+  let chartFocus = -1;
+  function drawChart() {
+    const box = $("chart");
+    if (!box || !result) return;
+    const data = result.verlauf;
+    const target = (result.T - result.sc[1].b2.EII) / 40;
+    const pts = data.filter((d) => d.v != null);
+    const compact = pts.length < 2;
+    const W = Math.max(280, box.clientWidth || 320), H = compact ? 130 : 210;
+    const m = { l: 28, r: 66, t: 14, b: 36 };
+    const tIn = target <= 15 && target >= 0;
+    let lo = Math.min(...pts.map((d) => d.v), tIn ? target : 15, 12);
+    lo = Math.max(0, Math.floor(lo) - 1);
+    const hi = 15;
+    const x = (q) => m.l + (q + 0.5) * (W - m.l - m.r) / 8;
+    const y = (v) => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
+    const step = compact ? Math.max(1, Math.ceil((hi - lo) / 3)) : hi - lo > 8 ? 2 : 1;
+    let g = "";
+    for (let v = hi; v >= lo; v -= step) g += `<line class="gl" x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+    for (let si = 0; si < 4; si++) {
+      const cx = (x(si * 2) + x(si * 2 + 1)) / 2;
+      g += `<text class="ax" x="${cx}" y="${H - 6}" text-anchor="middle">${SEMS[si]}</text>`;
+      for (let j = 0; j < 2; j++) g += `<text class="ax" x="${x(si * 2 + j)}" y="${H - 21}" text-anchor="middle">${j === 0 ? "I" : "II"}</text>`;
+    }
+    if (tIn) {
+      g += `<line class="tl" x1="${m.l}" x2="${W - m.r}" y1="${y(target)}" y2="${y(target)}"/>`;
+      g += `<text class="tlab" x="${W - m.r + 6}" y="${y(target) + 4}">nötig ${nf(target, 1)}</text>`;
+    }
+    const runs = [];
+    let cur = null;
+    data.forEach((d) => { if (d.v == null) { cur = null; return; } if (!cur) { cur = []; runs.push(cur); } cur.push(d); });
+    let path = "", area = "", marks = "";
+    runs.forEach((r) => {
+      path += r.map((d, i) => `${i ? "L" : "M"}${x(d.q).toFixed(1)},${y(d.v).toFixed(1)}`).join("");
+      if (r.length > 1) area += `M${x(r[0].q).toFixed(1)},${y(lo).toFixed(1)}` + r.map((d) => `L${x(d.q).toFixed(1)},${y(d.v).toFixed(1)}`).join("") + `L${x(r[r.length - 1].q).toFixed(1)},${y(lo).toFixed(1)}Z`;
+      r.forEach((d) => { marks += `<circle class="mk" cx="${x(d.q)}" cy="${y(d.v)}" r="4.5"/>`; });
+    });
+    const last = [...data].reverse().find((d) => d.v != null);
+    if (last) g += `<text class="elab" x="${x(last.q) + 9}" y="${y(last.v) - 8}">${nf(last.v, 1)}</text>`;
+    const label = pts.length ? `Verlauf deines Quartalsschnitts, zuletzt ${nf(last.v, 1)} Punkte` : "Noch keine Noten für den Verlauf";
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" tabindex="0" role="img" aria-label="${esc(label)}">${g}<path class="ar" d="${area}"/><path class="ln" d="${path}"/>${marks}<line class="xh" id="xh" y1="${m.t}" y2="${H - m.b + 2}" x1="-10" x2="-10" visibility="hidden"/><rect x="${m.l}" y="0" width="${W - m.l - m.r}" height="${H}" fill="transparent"/></svg>
+      <div class="tip" id="tip" hidden></div>
+      ${pts.length ? "" : '<div class="empty">Noch keine Noten. Sobald du die erste Klausur- oder SoMi-Note einträgst, erscheint hier dein Verlauf.</div>'}`;
+    const note = $("chartNote");
+    if (pts.length === 1) { note.hidden = false; note.innerHTML = `${QLABEL(pts[0].q)}: <strong>${nf(pts[0].v, 1)} P.</strong>${tIn ? ` · nötig ${nf(target, 1)} P.` : ""}`; }
+    else if (!tIn) { note.hidden = false; note.textContent = `Der nötige Kursschnitt für ${nf(state.settings.ziel, 1)} liegt über 15 Punkten.`; }
+    else note.hidden = true;
+    const svg = box.querySelector("svg"), tip = $("tip"), xh = box.querySelector("#xh");
+    const show = (q) => {
+      const d = data[q];
+      if (!d || d.v == null) { tip.hidden = true; xh.setAttribute("visibility", "hidden"); return; }
+      const scale = svg.getBoundingClientRect().width / W;
+      xh.setAttribute("x1", x(q)); xh.setAttribute("x2", x(q)); xh.setAttribute("visibility", "visible");
+      tip.innerHTML = `<strong>${nf(d.v, 1)} Punkte</strong>${esc(QLABEL(q))} · ${d.n} ${d.n === 1 ? "Note" : "Noten"}`;
+      tip.hidden = false;
+      const tw = tip.offsetWidth;
+      let left = x(q) * scale + 12;
+      if (left + tw > box.clientWidth) left = x(q) * scale - tw - 12;
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = Math.max(0, y(d.v) * scale - 20) + "px";
+    };
+    const nearest = (px) => {
+      let best = -1, bd = 1e9;
+      data.forEach((d) => { if (d.v == null) return; const dd = Math.abs(x(d.q) - px); if (dd < bd) { bd = dd; best = d.q; } });
+      return best;
+    };
+    svg.addEventListener("pointermove", (e) => { const r = svg.getBoundingClientRect(); show(nearest((e.clientX - r.left) * W / r.width)); });
+    svg.addEventListener("pointerleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+    svg.addEventListener("keydown", (e) => {
+      const qs = data.filter((d) => d.v != null).map((d) => d.q);
+      if (!qs.length || (e.key !== "ArrowRight" && e.key !== "ArrowLeft")) return;
+      e.preventDefault();
+      let i = qs.indexOf(chartFocus);
+      i = i < 0 ? qs.length - 1 : Math.max(0, Math.min(qs.length - 1, i + (e.key === "ArrowRight" ? 1 : -1)));
+      chartFocus = qs[i];
+      show(qs[i]);
+    });
+    svg.addEventListener("blur", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+  }
+  let roW = 0;
+  if (window.ResizeObserver) {
+    new ResizeObserver((en) => {
+      const w = Math.round(en[0].contentRect.width);
+      if (result && w > 0 && Math.abs(w - roW) > 4) { roW = w; drawChart(); }
+    }).observe($("chart"));
+  }
+
+  /* ---------- Einzelnoten ---------- */
+  let logFC = "all";
+  let logFS = SEMS[nowSem];
+  function renderLog() {
+    $("logFC").innerHTML = '<option value="all">Alle Fächer</option>' + orderedCourses().map((c) => `<option value="${c}"${c === logFC ? " selected" : ""}>${esc(COURSES[c].name)}</option>`).join("");
+    $("logFS").innerHTML = `<option value="all"${logFS === "all" ? " selected" : ""}>Alle Halbjahre</option>` + SEMS.map((s) => `<option value="${s}"${s === logFS ? " selected" : ""}>${s}${s === SEMS[nowSem] ? " (jetzt)" : ""}</option>`).join("");
+    const notes = (state.notes || []).filter((n) => (logFC === "all" || n.c === logFC) && (logFS === "all" || semOfDate(n.d) === logFS));
+    const box = $("logList");
+    if (!notes.length) {
+      const total = (state.notes || []).length;
+      box.innerHTML = `<p class="empty-box">${total ? "Für diese Auswahl gibt es noch keine Einzelnoten." : "Noch keine Einzelnoten. Tippe auf „Einzelnote“, um zum Beispiel einen Vokabeltest oder eine Praxisprüfung im Sport einzutragen."}</p>`;
+      return;
+    }
+    const groups = orderedCourses().map((c) => ({ c, items: notes.filter((n) => n.c === c).sort((a, b) => a.d.localeCompare(b.d)) })).filter((g) => g.items.length);
+    box.innerHTML = `<div class="loggroups">${groups.map((g) => {
+      const rows = g.items.map((n) => {
+        const semTag = logFS === "all" && n.d ? `${semOfDate(n.d)} · ` : "";
+        return `<li class="nrow"><span class="ld">${semTag}${fmtDate(n.d)}</span><span class="lt${n.t ? "" : " none"}">${esc(n.t || "ohne Titel")}</span><span class="lp"><span class="val">${fmtP(n.p)}</span><small>Note ${noteP(n.p)}</small></span><button type="button" class="iconbtn" data-act="del" data-id="${esc(n.id)}" aria-label="Einzelnote „${esc(n.t || "ohne Titel")}“ löschen">${ICON.x}</button></li>`;
+      }).join("");
+      return `<div><h2 class="sec-h lg-h">${esc(COURSES[g.c].name)}<span>${g.items.length === 1 ? "1 Eintrag" : `${g.items.length} Einträge`}</span></h2><ul class="list" style="margin-top:6px">${rows}</ul></div>`;
+    }).join("")}</div>`;
+  }
+  $("logFC").addEventListener("change", (e) => { logFC = e.target.value; renderLog(); });
+  $("logFS").addEventListener("change", (e) => { logFS = e.target.value; renderLog(); });
+  $("addNote").addEventListener("click", () => openSheet({ kind: "note", c: logFC !== "all" ? logFC : orderedCourses()[0] }));
+  function deleteNote(id) {
+    const idx = (state.notes || []).findIndex((n) => n.id === id);
+    if (idx < 0) return;
+    const [rm] = state.notes.splice(idx, 1);
+    renderLog(); renderOutputs(); renderDetail(); scheduleSave();
+    toast("Einzelnote gelöscht", { label: "Rückgängig", run: () => {
+      state.notes.splice(Math.min(idx, state.notes.length), 0, rm);
+      renderLog(); renderOutputs(); renderDetail(); scheduleSave();
+    } });
+  }
+
+  /* ---------- Einstellungen ---------- */
+  function renderSettings() {
+    const s = state.settings;
+    const opt = (list, cur, exclude) => list.filter((c) => c !== exclude).map((c) => `<option value="${c}"${c === cur ? " selected" : ""}>${COURSES[c].name}</option>`).join("");
+    const kl = ["D", "G", "E", "BI", "PH", "RE", "KU", "SP", "SW"].map((c) => {
+      const abi = isAbi(c, state);
+      return `<label class="tchip"><input type="checkbox" data-kl="${c}" id="kl-${c}"${abi || s.klausur[c] ? " checked" : ""}${abi ? " disabled" : ""}>${COURSES[c].short}</label>`;
+    }).join("");
+    $("settingsBody").innerHTML = `
+      <h2 class="sec-h">Abiturfächer</h2>
+      <ul class="list">
+        <li class="srow"><span>1. und 2. Abifach</span><span class="sv">Mathe LK, Erdkunde LK</span></li>
+        <li class="srow"><label for="setAbi3">3. Abifach (schriftlich)</label><select id="setAbi3">${opt(ABI_CHOICES, s.abi3, s.abi4)}</select></li>
+        <li class="srow"><label for="setAbi4">4. Abifach (mündlich)</label><select id="setAbi4">${opt(ABI_CHOICES, s.abi4, s.abi3)}</select></li>
+      </ul>
+      <p class="warnline" id="setWarn" hidden></p>
+      <h2 class="sec-h">Belegung</h2>
+      <ul class="list">
+        <li class="srow"><label for="setRel">Religion bis Q2</label><input type="checkbox" class="sw" id="setRel"${s.relQ2 ? " checked" : ""}></li>
+        <li class="srow"><label for="setKu">Kunst bis Q2</label><input type="checkbox" class="sw" id="setKu"${s.kuQ2 ? " checked" : ""}></li>
+        <li class="srow"><label for="setSport">Sportkurse einbringbar</label><select id="setSport"><option value="3"${s.sportMax === 3 ? " selected" : ""}>höchstens 3</option><option value="4"${s.sportMax === 4 ? " selected" : ""}>höchstens 4</option></select></li>
+        <li class="srow"><label for="setPk">Projektkurs läuft in</label><select id="setPk">
+          <option value="Q1"${s.pkPeriod === "Q1" ? " selected" : ""}>Q1.1 und Q1.2</option>
+          <option value="Q12"${s.pkPeriod === "Q12" ? " selected" : ""}>Q1.2 und Q2.1</option>
+          <option value="Q2"${s.pkPeriod === "Q2" ? " selected" : ""}>Q2.1 und Q2.2</option></select></li>
+      </ul>
+      <h2 class="sec-h">Fächer mit Klausuren</h2>
+      <div class="list"><div class="chips">${kl}</div></div>
+      <p class="help" style="padding:0 4px">Abifächer schreiben immer Klausuren und lassen sich hier nicht abwählen.</p>
+      <h2 class="sec-h">Speichern</h2>
+      <ul class="list"><li class="srow"><span>Status</span><span class="sv${status.kind === "warn" ? " bad-t" : ""}" id="setSave">${esc(status.text)}</span><button type="button" class="btn sm" id="retrySave" data-act="retry"${status.kind === "warn" && mode === "db" ? "" : " hidden"}>Erneut speichern</button></li></ul>
+      <h2 class="sec-h">Sicherung</h2>
+      <div class="list"><div class="resetbox"><p class="help">Speichert alle Noten, Prognosen, Einzelnoten, Termine und Einstellungen als Datei. Mit „Laden“ holst du sie zurück, auch in eine andere Version des Rechners. Mach nach jedem Zeugnis eine.</p><p class="meta" id="setBackup">${esc(backupText())}</p><div class="sh-actions"><button type="button" class="btn" data-act="export">Sichern</button><button type="button" class="btn" data-act="import">Laden</button></div><input type="file" id="importFile" accept=".json,application/json,text/plain" hidden></div></div>
+      <h2 class="sec-h">Daten</h2>
+      <div class="list"><div class="resetbox"><p class="help">Löscht alle Klausur-, SoMi-, Zeugnis- und Prüfungsnoten. Prognosen, Einzelnoten, Klausurtermine und Einstellungen bleiben. Direkt danach kannst du es rückgängig machen.</p><button type="button" class="btn danger" data-act="reset">Alle Noten löschen</button></div></div>
+      <h2 class="sec-h">So rechnet der Rechner</h2>
+      <p class="rules">APO-GOSt NRW in der bisherigen Fassung (gilt für deinen Jahrgang, Abitur 2028). Block I = Punkte ÷ Kurse × 40 (LK doppelt), Block II = vier Prüfungen × 5, Umrechnung nach KMK (ab 823 Punkten 1,0). Der Rechner wählt die Einbringung automatisch so, dass dein Schnitt am höchsten ist, und hält dabei Pflichtkurse, 35 bis 40 Kurse und die Defizitgrenzen ein. Halbjahresnoten sind geschätzt (Klausuren und SoMi je zur Hälfte); die echte Note legt deine Lehrkraft fest. Spannen wie 11-12: Im schlechtesten Fall zählt die untere Grenze, im besten die obere, sonst die Mitte. Sport: Alle vier Kurse sind einbringbar (Beispiellaufbahnen im Merkblatt des Schulministeriums); die alte Grenze von drei Sportkursen galt nur für die frühere APO-GOSt.</p>`;
+    renderLead();
+  }
+  $("settingsBody").addEventListener("change", (e) => {
+    const t = e.target, s = state.settings;
+    if (t.id === "setAbi3") s.abi3 = t.value;
+    else if (t.id === "setAbi4") s.abi4 = t.value;
+    else if (t.id === "setRel") s.relQ2 = t.checked;
+    else if (t.id === "setKu") s.kuQ2 = t.checked;
+    else if (t.id === "setSport") s.sportMax = Number(t.value);
+    else if (t.id === "setPk") s.pkPeriod = t.value;
+    else if (t.dataset.kl) s.klausur[t.dataset.kl] = t.checked;
+    else return;
+    const focusId = t.id;
+    renderAll(); scheduleSave();
+    const el = $(focusId);
+    if (el) el.focus();
+  });
+  function resetGrades() {
+    const snap = JSON.parse(JSON.stringify({ grades: state.grades, pk: state.pk, abi: state.abi }));
+    for (const c of Object.keys(state.grades)) {
+      for (const sem of Object.keys(state.grades[c])) {
+        const g = state.grades[c][sem];
+        state.grades[c][sem] = { k: [null, null], s: [null, null], z: null, kd: (g.kd || [null, null]).slice() };
+      }
+    }
+    state.pk = { s: [null, null, null, null], doku: null, z: null };
+    for (const c of Object.keys(state.abi)) state.abi[c].res = null;
+    renderAll(); scheduleSave();
+    toast("Alle Noten gelöscht", { label: "Rückgängig", run: () => {
+      state.grades = snap.grades; state.pk = snap.pk; state.abi = snap.abi;
+      renderAll(); scheduleSave();
+      toast("Noten wiederhergestellt");
+    } });
+  }
+
+  /* ---------- Sicherung ---------- */
+  function backupText() {
+    const d = lsGet(LS.backup);
+    return d ? `Letzte Sicherung auf diesem Gerät: ${fmtDate(d)}` : "Auf diesem Gerät noch keine Sicherung gespeichert.";
+  }
+  function markBackup() {
+    lsSet(LS.backup, todayISO());
+    const el = $("setBackup"); if (el) el.textContent = backupText();
+  }
+  async function exportBackup() {
+    const json = JSON.stringify({ app: "abi-rechner", saved: new Date().toISOString(), state: normalize(JSON.parse(JSON.stringify(state))) }, null, 2);
+    const filename = `abi-rechner-sicherung-${todayISO()}.json`;
+    let dl = null;
+    try { if (window.claude && typeof window.claude.use === "function") dl = await window.claude.use("downloads"); } catch (e) { dl = null; }
+    if (dl) {
+      try { await dl.save({ filename, data: json }); markBackup(); toast("Sicherung gespeichert"); }
+      catch (err) { if (!err || err.code !== "declined") toast("Sicherung hier nicht möglich"); }
+      return;
+    }
+    /* Ohne Claude (App auf dem Handy): Teilen-Menü mit „In Dateien sichern“, sonst normaler Download. */
+    const file = typeof File === "function" ? new File([json], filename, { type: "application/json" }) : null;
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: "Abi-Rechner Sicherung" }); markBackup(); toast("Sicherung gespeichert"); }
+      catch (err) { if (!err || err.name !== "AbortError") toast("Teilen hat nicht geklappt"); }
+      return;
+    }
+    const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    markBackup(); toast("Sicherung gespeichert");
+  }
+  document.addEventListener("change", (e) => {
+    if (e.target.id !== "importFile") return;
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      let raw = null;
+      try { raw = JSON.parse(String(rd.result)); } catch (er) { raw = null; }
+      const data = raw && raw.state && typeof raw.state === "object" ? raw.state : raw;
+      if (!data || typeof data !== "object" || !(data.settings || data.grades)) { toast("Das ist keine Sicherung vom Abi-Rechner"); return; }
+      const snap = JSON.parse(JSON.stringify(state));
+      state = normalize(data);
+      renderAll(); scheduleSave();
+      toast("Sicherung geladen", { label: "Rückgängig", run: () => { state = normalize(snap); renderAll(); scheduleSave(); toast("Vorheriger Stand zurück"); } });
+    };
+    rd.onerror = () => toast("Datei ließ sich nicht lesen");
+    rd.readAsText(f);
+  });
+
+  /* ---------- Rendern ---------- */
+  let rafId = 0;
+  function queueOutputs() { if (rafId) return; rafId = requestAnimationFrame(() => { rafId = 0; renderOutputs(); }); }
+  function renderOutputs() {
+    result = computeAll(state);
+    renderOverview();
+    renderCourseList();
+    updateAbiResults();
+    updateProgMids();
+    updateDetails();
+    renderZiel();
+    renderHebel();
+    renderBogen();
+    if (screen === "uebersicht") drawChart();
+  }
+  function renderAll() {
+    renderLead(); markSeg($("semSeg"), "sem", semTab, true); renderNotenBody(); renderPlanSeg(); renderProgRows(); renderSettings(); renderLog();
+    renderOutputs();
+    renderDetail();
+    if (sheet) renderSheet();
+  }
+  wideMQ.addEventListener("change", () => {
+    if (isWide() && sheet && sheet.kind === "course") { mdSel = sheet.c; closeSheet(true); }
+    renderCourseList(); renderDetail();
+  });
+
+  /* ---------- Speichern ---------- */
+  const snapshotJSON = () => JSON.stringify(normalize(JSON.parse(JSON.stringify(state))));
+  function scheduleSave() {
+    if (!loaded) return;
+    lsSet(LS.state, JSON.stringify(state));
+    if (mode !== "db") { if (STANDALONE) setChip(...LOCAL_OK); else setChip("Nur in diesem Browser gespeichert", "warn", "Nur lokal"); return; }
+    setChip("Ungespeicherte Änderungen …", "busy", "Speichert …");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 700);
+  }
+  async function doSave(retry = true) {
+    saveTimer = null;
+    if (saving) { savePending = true; return; }
+    saving = true;
+    setChip("Speichert …", "busy", "Speichert …");
+    const body = JSON.parse(JSON.stringify(state));
+    const j = snapshotJSON();
+    try {
+      await dbRef.set(body);
+      lastJSON = j;
+      setChip("Gespeichert", "ok", "Gespeichert");
+    } catch (err) {
+      const code = err && err.code;
+      if (code === "unavailable" && retry) {
+        saving = false;
+        await new Promise((r) => setTimeout(r, 800 + Math.random() * 1200));
+        return doSave(false);
+      }
+      if (["invalid_argument", "not_granted", "revoked", "capability_disabled", "capability_removed"].includes(code)) {
+        mode = "local";
+        setChip("Speichern ist hier nicht möglich. Deine Noten liegen nur in diesem Browser.", "warn", "Nur lokal");
+      } else if (code === "quota_exceeded") {
+        setChip("Speicher voll. Deine Änderung liegt nur in diesem Browser.", "warn", "Nicht gespeichert");
+      } else {
+        setChip("Nicht gespeichert. Deine Änderung liegt nur in diesem Browser.", "warn", "Nicht gespeichert");
+      }
+    }
+    saving = false;
+    if (savePending) { savePending = false; doSave(); }
+  }
+  function applyRemote(incoming) {
+    state = incoming;
+    renderAll();
+  }
+  document.addEventListener("focusout", () => {
+    setTimeout(() => {
+      const a = document.activeElement;
+      if (pendingRemote && !(a && a.matches && a.matches("input,select"))) { const r = pendingRemote; pendingRemote = null; applyRemote(r); }
+    }, 0);
+  });
+  function finishLoad(st, chipText, kind, short) {
+    state = st;
+    loaded = true;
+    $("main").inert = false;
+    $("app").removeAttribute("data-loading");
+    setChip(chipText, kind, short);
+    renderAll();
+  }
+  function startLocal(msg) {
+    if (loaded) { mode = "local"; setChip(msg, "warn", "Nur lokal"); return; }
+    mode = "local";
+    let raw = null;
+    try { raw = JSON.parse(lsGet(LS.state) || "null"); } catch (e) { raw = null; }
+    finishLoad(normalize(raw), msg, "warn", "Nur lokal");
+  }
+
+  async function boot() {
+    buildSegs();
+    renderAll();
+    const h = location.hash.slice(1);
+    go(SCREENS[h] ? h : SCREENS[lsGet(LS.screen)] ? lsGet(LS.screen) : "uebersicht");
+    let db = null, user = null;
+    try {
+      if (window.claude && typeof window.claude.use === "function") {
+        [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+      }
+    } catch (e) { db = null; }
+    if (!db && STANDALONE) {
+      mode = "local";
+      let raw = null;
+      try { raw = JSON.parse(lsGet(LS.state) || "null"); } catch (e) { raw = null; }
+      finishLoad(normalize(raw), ...LOCAL_OK);
+      try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+      return;
+    }
+    if (!db) { startLocal("Nur in diesem Browser gespeichert"); return; }
+    try { if (user && !(await user.isOwner())) { startLocal("Nur in diesem Browser gespeichert (nicht dein Rechner)"); return; } } catch (e) {}
+    mode = "db";
+    dbRef = db.doc("abi/state");
+    let first = true;
+    const timer = setTimeout(() => { if (first) { first = false; startLocal("Speicher nicht erreichbar. Änderungen liegen nur in diesem Browser."); } }, 12000);
+    dbRef.onSnapshot((snap) => {
+      if (snap.metadata && snap.metadata.hasPendingWrites) return;
+      const data = snap.exists ? snap.data() : null;
+      if (first) {
+        if (!data && snap.metadata && snap.metadata.fromCache) return;
+        first = false; clearTimeout(timer);
+        if (mode !== "db") return;
+        if (data) {
+          const st = normalize(data);
+          lastJSON = JSON.stringify(st);
+          finishLoad(st, "Gespeichert", "ok", "Gespeichert");
+        } else {
+          let raw = null;
+          try { raw = JSON.parse(lsGet(LS.state) || "null"); } catch (e) {}
+          finishLoad(normalize(raw), "Noch nichts gespeichert", "ok", "Bereit");
+          if (raw) scheduleSave();
+        }
+        return;
+      }
+      if (!data || mode !== "db") return;
+      const incoming = normalize(data);
+      const j = JSON.stringify(incoming);
+      if (j === lastJSON || saveTimer || saving) return;
+      lastJSON = j;
+      const a = document.activeElement;
+      if (a && a.matches && a.matches("input,select")) { pendingRemote = incoming; return; }
+      applyRemote(incoming);
+    }, () => { startLocal("Verbindung getrennt. Änderungen liegen nur in diesem Browser."); });
+  }
+  boot();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>
