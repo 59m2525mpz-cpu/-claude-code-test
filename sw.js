@@ -1,5 +1,5 @@
 /* Offline-Cache: App-Dateien sofort aus dem Cache, im Hintergrund aktualisieren. Version erhöhen, wenn sich die Dateiliste ändert. */
-const CACHE = "abi-rechner-v1";
+const CACHE = "abi-rechner-v2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
