@@ -2461,8 +2461,8 @@ if (typeof module !== "undefined") {
   async function boot() {
     buildSegs();
     renderAll();
-    const h = location.hash.slice(1);
-    go(SCREENS[h] ? h : SCREENS[lsGet(LS.screen)] ? lsGet(LS.screen) : "uebersicht");
+    /* Jeder Neustart beginnt in der Übersicht, egal welcher Reiter zuletzt offen war. */
+    go("uebersicht");
     let db = null, user = null;
     try {
       if (window.claude && typeof window.claude.use === "function") {
