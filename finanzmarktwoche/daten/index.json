@@ -1,0 +1,21 @@
+{
+ "version": 1,
+ "kdf": {
+  "name": "PBKDF2",
+  "hash": "SHA-256",
+  "iterations": 600000,
+  "salt": "NXCQyDzK3A0mhYlu4MUnCQ=="
+ },
+ "pruefung": {
+  "iv": "4UG67dufaKKwIal0",
+  "ct": "361FbiX5yTWIOiUGEhAa2YzLMgM="
+ },
+ "berichte": [
+  {
+   "id": "2026-kw43",
+   "hash": "be62aaa32a04f026",
+   "iv": "LqgrrqCKnIj8fYJA",
+   "ct": "1FpUs9RC6CC6+2QQ2rbgAyklieI7hbY93d5bXtI+g5viqjg8tAz1svs6fb0ttRh+HlEnsTw2Gesk9fpsBiT2vJSYz5BtHywJIki4KSkWqwPcvRXnfPD5uO2x5TIwfNtJIYwjZXTRAkoIhlSph7gI+FGSj7/lKSqVVTgQhYoMVjvux2uphNXLgx/Uyt/MfWMeJ5E5kefwz+erHO4P9zkytHUaDQi0QUDSBwVJ+rma4M3PCOK0nbeiPmuux2RXKHuJ3hNLVw2Wrth2pN1vfwImqOHMCT/NNeGZLUNn+gwPSRiy/oCSM4bK4yl3xNQJTiXSi7iyRbCYmCcVYFzrdd4FJr5trKPu94qJgVgtMhS5yUXAn+FRTNiX1eNIORn8/eZVyAgj/NXb446v7PxFBOiPxkIXnXCjNVFflIHK9PbWxZHeuS4obJF5CjNL/2WbA29ee+jl55eCogm+RnPmFCw8jKdZjNkAoAI6N6tzQXh9hH2NrbxNyFtTjp6gIJfb3Sxl1DVjIYmN"
+  }
+ ]
+}
