@@ -1,0 +1,6 @@
+# GitHub Pages: Projektnotizen der Finanzmarktwoche nicht als Seiten veröffentlichen
+exclude:
+  - finanzmarktwoche/PRODUCT.md
+  - finanzmarktwoche/DESIGN.md
+  - finanzmarktwoche/README.md
+  - finanzmarktwoche/werkzeug

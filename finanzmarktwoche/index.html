@@ -8,165 +8,263 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Marktwoche">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#0e2a66">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1f3a5f">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/sofia-sans-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-/* Layout: eine Lesespalte. Sperrbildschirm → Liste der Kalenderwochen (neueste oben) → Bericht im Vollbild */
+@font-face { font-family: "Etikett"; src: url("fonts/sofia-sans-condensed-latin-800-normal.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+@font-face { font-family: "Etikett"; src: url("fonts/sofia-sans-condensed-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
 :root {
-  --bg: #f1f4f9;
-  --surface: #ffffff;
-  --ink: #16223a;
-  --muted: #5d6880;
-  --line: #e2e6ed;
-  --head: #0e2a66;
-  --blue: #1f5ae0;
-  --blue-soft: #eaf0fd;
-  --neg: #c4242a;
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-num: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --ground: #e4e8ed;
+  --fach: #f6f7f9;
+  --board: #c3cbd5;
+  --rule: #dde2e8;
+  --ink: #18202d;
+  --muted: #566173;
+  --binder: #1f3a5f;
+  --binder-deep: #172d4b;
+  --on-binder: #ffffff;
+  --on-binder-muted: #bccadc;
+  --label: #ffffff;
+  --label-edge: #c9d0d9;
+  --label-ink: #121822;
+  --signal: #f2c230;
+  --signal-edge: #d4a514;
+  --focus: #2f6fd8;
+  --danger: #b4232c;
+  --press: rgba(31, 58, 95, .07);
+  --caret: #1f3a5f;
+  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --etikett: "Etikett", "Arial Narrow", "Roboto Condensed", var(--ui);
+  --ease: cubic-bezier(.22, 1, .36, 1);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0c1220; --surface: #151d2e; --ink: #e6ebf5; --muted: #95a0b8; --line: #263049;
-    --head: #c9d6f7; --blue: #8fb0ff; --blue-soft: #1c2a4f; --neg: #ff8a85; color-scheme: dark; }
+  :root {
+    --ground: #111824; --fach: #19222f; --board: #2c3748; --rule: #263142;
+    --ink: #e3e8ef; --muted: #9aa6b8;
+    --binder: #1d3352; --binder-deep: #162740; --on-binder-muted: #a9b9cf;
+    --label: #d9dfe7; --label-edge: #aab4c2; --label-ink: #111824;
+    --signal: #ddb02a; --signal-edge: #b98f12;
+    --focus: #7aa7f0; --danger: #ff8d86; --press: rgba(255, 255, 255, .05); --caret: #7aa7f0;
+    color-scheme: dark;
+  }
 }
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
-body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font); overscroll-behavior: none; touch-action: manipulation; }
-/* Übersicht und Sperre wie eine App: nur senkrecht scrollen, kein Zoom. Im Bericht ist Zoomen erlaubt. */
-#sperre, #liste { touch-action: pan-y; }
-button { font: inherit; cursor: pointer; }
-button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-[hidden] { display: none !important; }
-
-.screen {
-  min-height: 100%;
-  padding: calc(env(safe-area-inset-top, 0px) + 20px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 32px) max(16px, env(safe-area-inset-left, 0px));
+body {
+  background: var(--ground); color: var(--ink); font: 16px/1.45 var(--ui);
+  overscroll-behavior: none; touch-action: manipulation;
 }
-.col { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+/* Statusleiste: das Band unter der Uhrzeit bleibt immer ordnerblau */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--binder); z-index: 10; }
+::selection { background: var(--signal); color: var(--label-ink); }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: 640px; margin: 0 auto; }
+#sperre, #liste { touch-action: pan-y; }
+
+/* Rückenschild: Etikett mit KW und Nummer */
+.etikett {
+  display: grid; justify-items: center; align-content: center; gap: 1px;
+  width: 54px; height: 62px; border-radius: 7px; flex: none;
+  background: var(--label); color: var(--label-ink); border: 1px solid var(--label-edge);
+  font-family: var(--etikett); font-variant-numeric: tabular-nums; line-height: 1;
+}
+.etikett small { font-size: 12px; font-weight: 700; letter-spacing: .08em; opacity: .7; }
+.etikett b { font-size: 31px; font-weight: 800; letter-spacing: -.01em; }
+.etikett.signal { background: var(--signal); border-color: var(--signal-edge); }
+.etikett.signal small { opacity: .8; }
+
+/* Kopfband */
+.band { background: var(--binder); color: var(--on-binder); }
+.band h1 { font: 800 32px/1 var(--etikett); letter-spacing: .005em; margin: 0; text-wrap: balance; }
+.band .bestand { color: var(--on-binder-muted); font-size: 14px; margin-top: 6px; font-variant-numeric: tabular-nums; }
 
 /* Sperre */
-#sperre .col { min-height: calc(100vh - 120px); justify-content: center; gap: 22px; }
-.mark { width: 64px; height: 64px; border-radius: 15px; display: block; }
-.kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); font-weight: 700; }
-h1 { font: 800 32px/1.05 var(--font-num); letter-spacing: -.02em; color: var(--head); margin: 4px 0 0; }
-.lead { color: var(--muted); margin: 0; }
-form.lock { display: flex; flex-direction: column; gap: 12px; }
-form.lock input[type=password] {
-  font: inherit; font-size: 17px; padding: 14px; border-radius: 12px; border: 1px solid var(--line);
-  background: var(--surface); color: var(--ink); width: 100%;
+#sperre { min-height: 100%; display: flex; flex-direction: column; }
+#sperre .band { padding-top: calc(env(safe-area-inset-top, 0px) + 56px); padding-bottom: 32px; }
+#sperre .band .col { display: flex; align-items: flex-end; gap: 16px; }
+#sperre .band .etikett { width: 64px; height: 74px; }
+#sperre .band .etikett b { font-size: 37px; }
+.sperre-form { padding-top: 28px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px); }
+.sperre-form .col { display: flex; flex-direction: column; gap: 14px; }
+.sperre-form p { margin: 0; color: var(--muted); font-size: 15px; max-width: 34ch; }
+.feld {
+  font: inherit; font-size: 17px; width: 100%; padding: 13px 14px; border-radius: 10px;
+  border: 1px solid var(--board); background: var(--fach); color: var(--ink); caret-color: var(--caret);
 }
-.check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--muted); }
-.primary { background: var(--blue); color: #fff; border: 0; border-radius: 12px; padding: 14px; font-weight: 600; font-size: 17px; }
-@media (prefers-color-scheme: dark) { .primary { color: #0c1220; } }
-.primary:disabled { opacity: .6; }
-.err { color: var(--neg); font-size: 14px; min-height: 1.4em; margin: 0; }
+.feld::placeholder { color: var(--muted); }
+.merken { display: flex; gap: 10px; align-items: center; font-size: 15px; color: var(--ink); }
+.merken input { width: 20px; height: 20px; accent-color: var(--binder); margin: 0; }
+.primaer {
+  border: 0; border-radius: 10px; padding: 14px; font-size: 17px; font-weight: 600;
+  background: var(--binder); color: var(--on-binder);
+  transition: transform 160ms var(--ease), background-color 160ms ease;
+}
+.primaer:active { transform: scale(.98); background: var(--binder-deep); }
+.primaer:disabled { opacity: .65; }
+.sperre-form .fehler { color: var(--danger); font-size: 15px; min-height: 1.4em; margin: 0; }
 
-/* Liste */
-header.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-header.top > div { min-width: 0; }
-#liste h1 { font-size: clamp(24px, 7.4vw, 32px); }
-.icon-btn { background: var(--surface); border: 1px solid var(--line); color: var(--muted); border-radius: 10px; padding: 8px 12px; font-size: 14px; }
-.meta-line { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.search { font: inherit; font-size: 16px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; }
-.year { display: flex; flex-direction: column; gap: 10px; }
-.year-label { font-size: 12px; letter-spacing: .12em; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 10px; }
-.year-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-.item {
-  display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 14px; align-items: center; text-align: left; width: 100%;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; color: var(--ink);
+/* Archiv */
+#liste .band { padding-top: calc(env(safe-area-inset-top, 0px) + 20px); padding-bottom: 18px; }
+#liste .band .col { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.symbol-knopf {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 10px;
+  background: rgba(255, 255, 255, .1); border: 0; color: var(--on-binder);
+  transition: background-color 160ms ease;
 }
-.item:active { transform: scale(.99); }
-.item.latest { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue) inset; }
-.kw { display: flex; flex-direction: column; align-items: center; border-right: 1px solid var(--line); padding-right: 12px; }
-.kw small { font-size: 10px; letter-spacing: .12em; color: var(--muted); font-weight: 600; }
-.kw b { font: 800 28px/1 var(--font-num); color: var(--blue); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.range { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.ttl { font-weight: 650; font-size: 16px; line-height: 1.3; color: var(--head); }
-.badge { display: inline-block; vertical-align: 2px; margin-left: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--blue-soft); color: var(--blue); border-radius: 999px; padding: 1px 7px; }
-.teaser { font-size: 14px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.empty { border: 1.5px dashed var(--line); border-radius: 14px; padding: 22px; color: var(--muted); }
-.note { font-size: 13px; color: var(--muted); text-align: center; }
+.symbol-knopf:active { background: rgba(255, 255, 255, .2); }
+.suche { position: relative; margin: 16px auto 4px; }
+.suche .icon { position: absolute; left: 12px; top: 50%; translate: 0 -50%; color: var(--muted); width: 18px; height: 18px; pointer-events: none; }
+.suche input { padding-left: 38px; }
+.suche input::-webkit-search-cancel-button { cursor: pointer; }
+#regal > .fach { margin-top: 22px; border-radius: 6px; }
+#regal { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); }
+.boden { margin-top: 22px; }
+.boden h2 {
+  font: 700 15px/1 var(--etikett); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin: 0 4px 8px;
+}
+/* Regalfach, darunter ein gerades Brett, etwas breiter als das Fach */
+.fach { background: var(--fach); border-radius: 6px 6px 0 0; overflow: hidden; }
+.boden::after {
+  content: ""; display: block; height: 6px; margin: 0 -6px; border-radius: 1px;
+  background: var(--board); box-shadow: 0 8px 12px -6px rgba(18, 28, 45, .35);
+}
+.zeile {
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+  padding: 12px 12px 12px 12px; border: 0; background: transparent;
+  transition: background-color 120ms ease;
+}
+.zeile + .zeile { border-top: 1px solid var(--rule); }
+.zeile:active { background: var(--press); }
+.zeile .txt { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.zeile .zeit { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.zeile .titel { font-size: 16px; font-weight: 600; line-height: 1.3; color: var(--ink); text-wrap: balance; }
+.zeile .kern { font-size: 14px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.zeile > .icon { color: var(--muted); width: 18px; height: 18px; }
+.leer { padding: 22px 18px; color: var(--muted); font-size: 15px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.leer button { border: 1px solid var(--board); background: transparent; border-radius: 9px; padding: 8px 14px; font-size: 15px; font-weight: 600; color: var(--ink); }
 
 /* Bericht */
-#leser { position: fixed; inset: 0; background: #fff; display: flex; flex-direction: column; z-index: 5; }
-.bar {
-  display: flex; align-items: center; gap: 8px; background: var(--head); color: #fff;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) max(10px, env(safe-area-inset-right, 0px)) 8px max(10px, env(safe-area-inset-left, 0px));
+#leser { position: fixed; inset: 0; background: #fff; display: flex; flex-direction: column; z-index: 20; }
+.leiste {
+  background: var(--binder); color: var(--on-binder);
+  padding: calc(env(safe-area-inset-top, 0px) + 6px) max(8px, env(safe-area-inset-right, 0px)) 8px max(8px, env(safe-area-inset-left, 0px));
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
 }
-@media (prefers-color-scheme: dark) { .bar { background: #0e2a66; } }
-.bar button { background: transparent; border: 0; color: #fff; padding: 8px 10px; border-radius: 8px; font-size: 16px; }
-.bar button:disabled { opacity: .35; }
-.bar .back { font-weight: 600; }
-.bar .where { flex: 1; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.leiste button { border: 0; background: transparent; color: var(--on-binder); border-radius: 9px; transition: background-color 120ms ease; }
+.leiste button:active { background: rgba(255, 255, 255, .14); }
+.leiste button:disabled { opacity: .35; }
+.zurueck { justify-self: start; display: inline-flex; align-items: center; gap: 2px; padding: 9px 10px 9px 4px; font-size: 16px; font-weight: 600; }
+.wo { display: flex; align-items: center; gap: 8px; }
+.wo .etikett { width: auto; height: 30px; padding: 0 8px; grid-auto-flow: column; gap: 5px; border-radius: 6px; align-items: center; }
+.wo .etikett small { font-size: 11px; }
+.wo .etikett b { font-size: 21px; }
+.wo span { color: var(--on-binder-muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.blaettern { justify-self: end; display: flex; }
+.blaettern button { display: inline-grid; place-items: center; width: 40px; height: 40px; }
+.modi {
+  background: var(--binder); display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 0 max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px));
+}
+.seg { display: inline-flex; background: rgba(255, 255, 255, .12); border-radius: 9px; padding: 2px; }
+.seg button { border: 0; background: transparent; color: var(--on-binder); font-size: 14px; font-weight: 600; padding: 6px 18px; border-radius: 7px; transition: background-color 160ms ease, color 160ms ease; }
+.seg button[aria-pressed="true"] { background: var(--label); color: var(--label-ink); }
+.teilen { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 255, 255, .3); background: transparent; color: var(--on-binder); font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 9px; }
+.teilen .icon { width: 17px; height: 17px; }
 #rahmen { flex: 1; width: 100%; border: 0; background: #fff; }
-.modes { display: flex; justify-content: center; gap: 8px; align-items: center; background: var(--head);
-  padding: 0 max(10px, env(safe-area-inset-right, 0px)) 10px max(10px, env(safe-area-inset-left, 0px)); }
-@media (prefers-color-scheme: dark) { .modes { background: #0e2a66; } }
-.seg { display: inline-flex; background: rgba(255,255,255,.14); border-radius: 9px; padding: 2px; }
-.seg button { border: 0; background: transparent; color: #fff; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 7px; }
-.seg button[aria-pressed="true"] { background: #fff; color: #0e2a66; }
-.share { border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 9px; }
-#pdfView { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #dfe4ec; padding: 10px 8px calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-#pdfView canvas { display: block; width: 100%; max-width: 900px; height: auto; background: #fff; box-shadow: 0 1px 3px rgba(14,42,102,.18); border-radius: 2px; }
-#pdfView .msg { color: #5d6880; margin-top: 40px; text-align: center; font-size: 15px; padding: 0 16px; }
-.loading { position: absolute; inset: 50% 0 auto; text-align: center; color: #5d6880; }
-@media (prefers-reduced-motion: reduce) { .item:active { transform: none; } }
+#pdfView { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--ground); padding: 10px 8px calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#pdfView canvas { display: block; width: 100%; max-width: 900px; height: auto; background: #fff; box-shadow: 0 1px 3px rgba(18, 28, 45, .18); border-radius: 2px; }
+#pdfView .msg { color: var(--muted); margin-top: 40px; text-align: center; font-size: 15px; padding: 0 16px; }
+
+/* Signatur: das Etikett wandert beim Öffnen in die Leseleiste */
+.wo .etikett { view-transition-name: etikett; }
+::view-transition-group(etikett) { animation-duration: 240ms; animation-timing-function: var(--ease); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; }
+@media (prefers-reduced-motion: reduce) {
+  .primaer, .zeile, .seg button { transition: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
 </style>
 </head>
 <body>
 
-<section class="screen" id="sperre" hidden>
-  <div class="col">
-    <img class="mark" src="icons/icon-192.png" alt="">
-    <div>
-      <div class="kicker">Finanzmarkt-Wochenberichte</div>
-      <h1>Finanzmarktwoche</h1>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-rechts" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-links" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-hoch" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+  <symbol id="i-runter" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-schloss" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-suche" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-teilen" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></symbol>
+</svg>
+
+<section id="sperre" hidden>
+  <div class="band gutter">
+    <div class="col">
+      <div class="etikett" aria-hidden="true"><small>KW</small><b id="heuteKw"></b></div>
+      <div>
+        <h1>Finanzmarktwoche</h1>
+        <div class="bestand">Archiv gesperrt</div>
+      </div>
     </div>
-    <p class="lead">Die Berichte sind verschlüsselt. Gib dein Passwort ein, um das Archiv zu öffnen.</p>
-    <form class="lock" id="lockForm" autocomplete="on">
+  </div>
+  <div class="sperre-form gutter">
+    <form class="col" id="lockForm" autocomplete="on">
+      <p>Die Berichte sind verschlüsselt. Mit deinem Passwort öffnest du das Archiv.</p>
       <input type="text" name="username" value="finanzmarktwoche" autocomplete="username" hidden>
-      <input type="password" id="pw" autocomplete="current-password" placeholder="Passwort" required>
-      <label class="check"><input type="checkbox" id="merken" checked> Auf diesem Gerät merken</label>
-      <button class="primary" id="unlockBtn" type="submit">Entsperren</button>
-      <p class="err" id="lockErr" role="alert"></p>
+      <input class="feld" type="password" id="pw" autocomplete="current-password" placeholder="Passwort" aria-label="Passwort" required>
+      <label class="merken"><input type="checkbox" id="merken" checked> Auf diesem Gerät merken</label>
+      <button class="primaer" id="unlockBtn" type="submit">Archiv öffnen</button>
+      <p class="fehler" id="lockErr" role="alert"></p>
     </form>
   </div>
 </section>
 
-<section class="screen" id="liste" hidden>
-  <div class="col">
-    <header class="top">
+<section id="liste" hidden>
+  <header class="band gutter">
+    <div class="col">
       <div>
-        <div class="kicker">Finanzmarkt-Wochenberichte</div>
         <h1>Finanzmarktwoche</h1>
-        <div class="meta-line" id="stats"></div>
+        <div class="bestand" id="stats"></div>
       </div>
-      <button class="icon-btn" id="sperrenBtn" type="button">Sperren</button>
-    </header>
-    <input class="search" id="q" type="search" placeholder="Suchen: Fed, Öl, SAP, KW 41 …" aria-label="Berichte durchsuchen">
-    <main id="items"></main>
-    <p class="note" id="status"></p>
+      <button class="symbol-knopf" id="sperrenBtn" type="button" aria-label="Archiv sperren"><svg class="icon"><use href="#i-schloss"/></svg></button>
+    </div>
+  </header>
+  <div class="gutter">
+    <div class="col suche">
+      <svg class="icon"><use href="#i-suche"/></svg>
+      <input class="feld" id="q" type="search" placeholder="Suchen: Fed, Öl, SAP, KW 41" aria-label="Berichte durchsuchen" enterkeyhint="search">
+    </div>
+    <main class="col" id="regal"></main>
   </div>
 </section>
 
 <section id="leser" hidden>
-  <div class="bar">
-    <button class="back" id="zurueck" type="button">‹ Übersicht</button>
-    <div class="where" id="wo"></div>
-    <button id="neuer" type="button" aria-label="Neuere Woche">▲</button>
-    <button id="aelter" type="button" aria-label="Ältere Woche">▼</button>
+  <div class="leiste">
+    <button class="zurueck" id="zurueck" type="button"><svg class="icon"><use href="#i-links"/></svg>Archiv</button>
+    <div class="wo" id="wo"><div class="etikett"><small>KW</small><b id="woKw"></b></div><span id="woJahr"></span></div>
+    <div class="blaettern">
+      <button id="neuer" type="button" aria-label="Neuere Woche"><svg class="icon"><use href="#i-hoch"/></svg></button>
+      <button id="aelter" type="button" aria-label="Ältere Woche"><svg class="icon"><use href="#i-runter"/></svg></button>
+    </div>
   </div>
-  <div class="modes" id="modes" hidden>
+  <div class="modi" id="modes" hidden>
     <div class="seg" role="group" aria-label="Ansicht">
       <button type="button" id="modusSeite" aria-pressed="true">Seite</button>
       <button type="button" id="modusPdf" aria-pressed="false">PDF</button>
     </div>
-    <button class="share" type="button" id="teilen" hidden>Teilen / Sichern</button>
+    <button class="teilen" type="button" id="teilen" hidden><svg class="icon"><use href="#i-teilen"/></svg>Teilen</button>
   </div>
   <iframe id="rahmen" title="Wochenbericht" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
   <div id="pdfView" hidden></div>
@@ -176,6 +274,7 @@ header.top > div { min-width: 0; }
 (() => {
   const $ = (id) => document.getElementById(id);
   const MON = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
+  const MONAT = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
   const SPEICHER = "fmw-schluessel";
   let index = null, key = null, berichte = [], aktuell = null, blobUrl = null;
 
@@ -216,6 +315,19 @@ header.top > div { min-width: 0; }
     return m.getUTCDate() + "." + (m.getUTCMonth() !== f.getUTCMonth() ? " " + MON[m.getUTCMonth()] : "") + " – " + f.getUTCDate() + ". " + MON[f.getUTCMonth()] + " " + f.getUTCFullYear();
   }
 
+  function isoWoche(d) {
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+    return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7);
+  }
+  $("heuteKw").textContent = String(isoWoche(new Date())).padStart(2, "0");
+  // Monat eines Berichts = Monat des Freitags seiner Woche
+  function monat(b) {
+    const f = montag(b.jahr, b.kw); f.setUTCDate(f.getUTCDate() + 4);
+    return { key: f.getUTCFullYear() * 100 + f.getUTCMonth(), name: MONAT[f.getUTCMonth()] + " " + f.getUTCFullYear() };
+  }
+  const svg = (id) => '<svg class="icon" aria-hidden="true"><use href="#' + id + '"/></svg>';
+
   // Start
   async function start() {
     try { index = await holeJson("daten/index.json"); }
@@ -238,7 +350,7 @@ header.top > div { min-width: 0; }
   $("lockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!index) return start();
-    const btn = $("unlockBtn"); btn.disabled = true; btn.textContent = "Prüft …"; $("lockErr").textContent = "";
+    const btn = $("unlockBtn"); btn.disabled = true; btn.textContent = "Wird geöffnet …"; $("lockErr").textContent = "";
     try {
       const k = await ableiten($("pw").value);
       if (!(await pruefen(k))) { $("lockErr").textContent = "Falsches Passwort."; return; }
@@ -246,12 +358,12 @@ header.top > div { min-width: 0; }
       $("pw").value = "";
       oeffnen();
     } catch { $("lockErr").textContent = "Entsperren fehlgeschlagen."; }
-    finally { btn.disabled = false; btn.textContent = "Entsperren"; }
+    finally { btn.disabled = false; btn.textContent = "Archiv öffnen"; }
   });
 
   $("sperrenBtn").addEventListener("click", () => {
     schreib(SPEICHER, null); key = null; berichte = [];
-    $("items").replaceChildren(); zeige("sperre");
+    $("regal").replaceChildren(); zeige("sperre");
   });
 
   function zeige(id) {
@@ -278,43 +390,66 @@ header.top > div { min-width: 0; }
     return q.toLowerCase().split(/\s+/).every((w) => t.includes(w));
   }
 
+  function leer(text, knopf) {
+    const e = document.createElement("div"); e.className = "fach";
+    const l = document.createElement("div"); l.className = "leer";
+    const p = document.createElement("span"); p.textContent = text; l.appendChild(p);
+    if (knopf) {
+      const k = document.createElement("button"); k.type = "button"; k.textContent = "Suche löschen";
+      k.addEventListener("click", () => { $("q").value = ""; liste(); $("q").focus(); });
+      l.appendChild(k);
+    }
+    e.appendChild(l); return e;
+  }
+
   function liste() {
     const q = $("q").value.trim();
-    const box = $("items");
+    const box = $("regal");
     box.replaceChildren();
     const n = berichte.length;
-    $("stats").textContent = n ? n + (n === 1 ? " Bericht" : " Berichte") + " · zuletzt KW " + berichte[0].kw + "/" + berichte[0].jahr : "";
-    if (!n) {
-      const e = document.createElement("div"); e.className = "empty";
-      e.textContent = "Noch keine Berichte im Archiv. Neue Wochenberichte erscheinen hier automatisch.";
-      box.appendChild(e); return;
-    }
+    $("stats").textContent = n ? n + (n === 1 ? " Bericht" : " Berichte") + " · zuletzt KW " + berichte[0].kw + "/" + berichte[0].jahr : "Noch leer";
+    if (!n) { box.appendChild(leer("Noch keine Wochen im Regal. Neue Berichte kommen freitags am Abend automatisch dazu.")); return; }
     const treffer = berichte.filter((b) => passt(b, q));
-    if (!treffer.length) {
-      const e = document.createElement("div"); e.className = "empty";
-      e.textContent = "Kein Bericht passt zu „" + q + "“.";
-      box.appendChild(e); return;
-    }
-    let jahr = null, gruppe = null;
+    if (!treffer.length) { box.appendChild(leer("Keine Woche passt zu „" + q + "“.", true)); return; }
+    let mk = null, fach = null;
     for (const b of treffer) {
-      if (b.jahr !== jahr) {
-        jahr = b.jahr;
-        gruppe = document.createElement("section"); gruppe.className = "year";
-        const l = document.createElement("div"); l.className = "year-label"; l.textContent = jahr;
-        gruppe.appendChild(l); box.appendChild(gruppe);
+      const m = monat(b);
+      if (m.key !== mk) {
+        mk = m.key;
+        const boden = document.createElement("section"); boden.className = "boden";
+        const h = document.createElement("h2"); h.textContent = m.name;
+        fach = document.createElement("div"); fach.className = "fach";
+        boden.append(h, fach); box.appendChild(boden);
       }
       const neu = b.id === berichte[0].id;
       const el = document.createElement("button");
-      el.type = "button"; el.className = "item" + (neu ? " latest" : "");
-      el.innerHTML = '<div class="kw"><small>KW</small><b></b></div><div class="txt"><span class="range"></span><span class="ttl"></span><span class="teaser"></span></div>';
-      el.querySelector(".kw b").textContent = String(b.kw).padStart(2, "0");
-      el.querySelector(".range").textContent = zeitraum(b);
-      const t = el.querySelector(".ttl"); t.textContent = b.titel;
-      if (neu) { const s = document.createElement("span"); s.className = "badge"; s.textContent = "neu"; t.appendChild(s); }
-      el.querySelector(".teaser").textContent = b.kurz || "";
-      el.addEventListener("click", () => lesen(b.id, true));
-      gruppe.appendChild(el);
+      el.type = "button"; el.className = "zeile" + (neu ? " neu" : ""); el.dataset.id = b.id;
+      el.innerHTML = '<div class="etikett' + (neu ? " signal" : "") + '"><small>KW</small><b></b></div><div class="txt"><span class="zeit"></span><span class="titel"></span><span class="kern"></span></div>' + svg("i-rechts");
+      el.querySelector(".etikett b").textContent = String(b.kw).padStart(2, "0");
+      el.querySelector(".zeit").textContent = zeitraum(b);
+      el.querySelector(".titel").textContent = b.titel;
+      el.querySelector(".kern").textContent = b.kurz || "";
+      el.setAttribute("aria-label", "KW " + b.kw + " " + b.jahr + (neu ? ", neueste Woche" : "") + ": " + b.titel);
+      el.addEventListener("click", () => mitUebergang(el.querySelector(".etikett"), () => lesen(b.id, true)));
+      fach.appendChild(el);
     }
+  }
+
+  // Signatur: Etikett wandert per View Transition in die Leseleiste (ohne Unterstützung: sofort)
+  function mitUebergang(etikett, aktion) {
+    const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!document.startViewTransition || ruhig || !etikett) { aktion(); return; }
+    etikett.style.viewTransitionName = "etikett";
+    const t = document.startViewTransition(() => { etikett.style.viewTransitionName = ""; aktion(); });
+    t.finished.finally(() => { etikett.style.viewTransitionName = ""; });
+  }
+  function schliessenMitUebergang() {
+    const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const id = aktuell !== null ? berichte[aktuell].id : null;
+    const ziel = id && document.querySelector('.zeile[data-id="' + id + '"] .etikett');
+    if (!document.startViewTransition || ruhig || !ziel) { schliessen(); return; }
+    const t = document.startViewTransition(() => { schliessen(); ziel.style.viewTransitionName = "etikett"; });
+    t.finished.finally(() => { ziel.style.viewTransitionName = ""; });
   }
   $("q").addEventListener("input", liste);
 
@@ -422,7 +557,9 @@ header.top > div { min-width: 0; }
     if (i < 0) return;
     aktuell = i;
     const b = berichte[i];
-    $("wo").textContent = "KW " + b.kw + " · " + b.jahr;
+    $("woKw").textContent = String(b.kw).padStart(2, "0");
+    $("woJahr").textContent = b.jahr;
+    $("wo").querySelector(".etikett").classList.toggle("signal", i === 0);
     $("neuer").disabled = i === 0;
     $("aelter").disabled = i === berichte.length - 1;
     $("leser").hidden = false;
@@ -473,7 +610,7 @@ header.top > div { min-width: 0; }
     zeigeImRahmen(null);
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
-  $("zurueck").addEventListener("click", schliessen);
+  $("zurueck").addEventListener("click", schliessenMitUebergang);
   $("neuer").addEventListener("click", () => { if (aktuell > 0) lesen(berichte[aktuell - 1].id, false); });
   $("aelter").addEventListener("click", () => { if (aktuell < berichte.length - 1) lesen(berichte[aktuell + 1].id, false); });
 
