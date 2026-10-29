@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" id="vp" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Finanzmarktwoche</title>
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,7 +35,9 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
-body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font); overscroll-behavior: none; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font); overscroll-behavior: none; touch-action: manipulation; }
+/* Übersicht und Sperre wie eine App: nur senkrecht scrollen, kein Zoom. Im Bericht ist Zoomen erlaubt. */
+#sperre, #liste { touch-action: pan-y; }
 button { font: inherit; cursor: pointer; }
 button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 [hidden] { display: none !important; }
@@ -426,6 +428,7 @@ header.top > div { min-width: 0; }
     $("leser").hidden = false;
     $("modusSeite").setAttribute("aria-pressed", modus === "seite");
     $("modusPdf").setAttribute("aria-pressed", modus === "pdf");
+    zoomErlauben(true);
     anzeigen(b);
     // Ohne Verlaufseinträge: Zurück schließt den Bericht direkt (iframe-Ladevorgänge landen sonst im Verlauf)
     if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
@@ -448,6 +451,14 @@ header.top > div { min-width: 0; }
     }
   }
 
+  // Zoom nur im Bericht. Beim Schließen setzt maximum-scale=1 eine Vergrößerung zurück.
+  function zoomErlauben(ja) {
+    $("vp").setAttribute("content", "width=device-width,initial-scale=1" + (ja ? "" : ",maximum-scale=1,user-scalable=no") + ",viewport-fit=cover");
+  }
+  ["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => {
+    if ($("leser").hidden) e.preventDefault();
+  }, { passive: false }));
+
   // Jeder Bericht bekommt einen frischen Rahmen, damit kein Ladevorgang im Verlauf landet
   function zeigeImRahmen(url) {
     const alt = $("rahmen"), neu = alt.cloneNode(false);
@@ -456,6 +467,7 @@ header.top > div { min-width: 0; }
     alt.replaceWith(neu);
   }
   function schliessen() {
+    zoomErlauben(false);
     $("leser").hidden = true; aktuell = null; pdfLauf++;
     $("pdfView").replaceChildren(); pdfDatei = null;
     zeigeImRahmen(null);
