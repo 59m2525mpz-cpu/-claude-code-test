@@ -21,7 +21,8 @@ FMW_PASSWORT='…' node finanzmarktwoche/werkzeug/bericht-hinzufuegen.mjs --date
 FMW_PASSWORT='…' node finanzmarktwoche/werkzeug/bericht-hinzufuegen.mjs --datei marktrueckblick-2026-10-09.md --kw 41 --jahr 2026
 ```
 
-- HTML-Berichte im Format der geplanten Aufgabe liefern KW, Jahr, Zeitraum und Titel selbst.
+- HTML-Berichte im Format der geplanten Aufgabe liefern KW, Jahr, Zeitraum und Titel selbst, dazu die eingebettete PDF.
+- Mit `--pdf datei.pdf` lässt sich eine PDF auch einzeln anhängen (z. B. bei Markdown-Berichten).
 - Bei Markdown kommen KW und Jahr aus `--kw`/`--jahr` oder aus dem Datum im Dateinamen.
 - Gleiche KW wird ersetzt; unveränderter Inhalt wird übersprungen.
 
@@ -33,7 +34,8 @@ FMW_PASSWORT='alt' FMW_PASSWORT_NEU='neu' node finanzmarktwoche/werkzeug/bericht
 
 ## Dateien
 
-- `index.html`: die App (Entsperren, Liste, Bericht-Ansicht)
-- `daten/`: verschlüsselte Berichte und Index
+- `index.html`: die App (Entsperren, Liste, Bericht als Seite oder PDF, PDF teilen/sichern)
+- `daten/`: verschlüsselte Berichte (`<id>.json`), PDFs (`<id>.pdf.json`) und Index
+- `vendor/`: pdf.js 3.11.174 (Mozilla, Apache-2.0) für die PDF-Ansicht, offline verfügbar
 - `werkzeug/bericht-hinzufuegen.mjs`: verschlüsselt neue Berichte (Node 18+, keine Abhängigkeiten)
 - `manifest.webmanifest`, `icons/`, `sw.js`: Home-Bildschirm und Offline-Betrieb

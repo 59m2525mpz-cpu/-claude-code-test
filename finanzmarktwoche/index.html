@@ -102,6 +102,16 @@ header.top > div { min-width: 0; }
 .bar .back { font-weight: 600; }
 .bar .where { flex: 1; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #rahmen { flex: 1; width: 100%; border: 0; background: #fff; }
+.modes { display: flex; justify-content: center; gap: 8px; align-items: center; background: var(--head);
+  padding: 0 max(10px, env(safe-area-inset-right, 0px)) 10px max(10px, env(safe-area-inset-left, 0px)); }
+@media (prefers-color-scheme: dark) { .modes { background: #0e2a66; } }
+.seg { display: inline-flex; background: rgba(255,255,255,.14); border-radius: 9px; padding: 2px; }
+.seg button { border: 0; background: transparent; color: #fff; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 7px; }
+.seg button[aria-pressed="true"] { background: #fff; color: #0e2a66; }
+.share { border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 9px; }
+#pdfView { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #dfe4ec; padding: 10px 8px calc(env(safe-area-inset-bottom, 0px) + 16px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#pdfView canvas { display: block; width: 100%; max-width: 900px; height: auto; background: #fff; box-shadow: 0 1px 3px rgba(14,42,102,.18); border-radius: 2px; }
+#pdfView .msg { color: #5d6880; margin-top: 40px; text-align: center; font-size: 15px; padding: 0 16px; }
 .loading { position: absolute; inset: 50% 0 auto; text-align: center; color: #5d6880; }
 @media (prefers-reduced-motion: reduce) { .item:active { transform: none; } }
 </style>
@@ -149,7 +159,15 @@ header.top > div { min-width: 0; }
     <button id="neuer" type="button" aria-label="Neuere Woche">▲</button>
     <button id="aelter" type="button" aria-label="Ältere Woche">▼</button>
   </div>
+  <div class="modes" id="modes" hidden>
+    <div class="seg" role="group" aria-label="Ansicht">
+      <button type="button" id="modusSeite" aria-pressed="true">Seite</button>
+      <button type="button" id="modusPdf" aria-pressed="false">PDF</button>
+    </div>
+    <button class="share" type="button" id="teilen" hidden>Teilen / Sichern</button>
+  </div>
   <iframe id="rahmen" title="Wochenbericht" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
+  <div id="pdfView" hidden></div>
 </section>
 
 <script>
@@ -163,6 +181,7 @@ header.top > div { min-width: 0; }
   const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
   const lies = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
   const schreib = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
+  let modus = lies("fmw-modus") === "pdf" ? "pdf" : "seite", pdfDatei = null, pdfLauf = 0;
 
   async function holeJson(pfad) {
     const r = await fetch(pfad, { cache: "no-store" });
@@ -325,6 +344,77 @@ header.top > div { min-width: 0; }
     return kopf + "</head><body>" + inhalt + "</body></html>";
   }
 
+  // PDF-Ansicht (pdf.js liegt in vendor/, funktioniert offline)
+  function ladePdfJs() {
+    if (window.pdfjsLib) return Promise.resolve();
+    return new Promise((ok, nein) => {
+      const s = document.createElement("script");
+      s.src = "vendor/pdf.min.js";
+      s.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc = "vendor/pdf.worker.min.js"; ok(); };
+      s.onerror = nein;
+      document.head.appendChild(s);
+    });
+  }
+  async function holePdf(b) {
+    if (b._pdf) return b._pdf;
+    const box = await holeJson("daten/" + b.id + ".pdf.json");
+    const bytes = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(box.iv) }, key, unb64(box.ct)));
+    b._pdf = new File([bytes], b.pdf, { type: "application/pdf" });
+    return b._pdf;
+  }
+  function pdfMeldung(text) {
+    const v = $("pdfView"); v.replaceChildren();
+    const m = document.createElement("p"); m.className = "msg"; m.textContent = text; v.appendChild(m);
+  }
+  async function zeigePdf(b) {
+    const lauf = ++pdfLauf, v = $("pdfView");
+    pdfMeldung("PDF wird geladen …");
+    try {
+      const [datei] = await Promise.all([holePdf(b), ladePdfJs()]);
+      if (lauf !== pdfLauf) return;
+      pdfDatei = datei;
+      $("teilen").hidden = !(navigator.canShare && navigator.canShare({ files: [datei] }));
+      const doc = await pdfjsLib.getDocument({ data: new Uint8Array(await datei.arrayBuffer()) }).promise;
+      if (lauf !== pdfLauf) return;
+      v.replaceChildren();
+      const breite = Math.min(v.clientWidth - 16, 900);
+      const dichte = Math.min((window.devicePixelRatio || 1) * 1.5, 3.5);
+      for (let n = 1; n <= doc.numPages; n++) {
+        const seite = await doc.getPage(n);
+        if (lauf !== pdfLauf) return;
+        const vp = seite.getViewport({ scale: (breite / seite.getViewport({ scale: 1 }).width) * dichte });
+        const c = document.createElement("canvas");
+        c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+        c.setAttribute("aria-label", "Seite " + n + " von " + doc.numPages);
+        v.appendChild(c);
+        await seite.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+      }
+    } catch {
+      if (lauf === pdfLauf) pdfMeldung("PDF konnte nicht geladen werden. Prüfe die Internetverbindung.");
+    }
+  }
+  function setzeModus(m) {
+    modus = m; schreib("fmw-modus", m);
+    $("modusSeite").setAttribute("aria-pressed", m === "seite");
+    $("modusPdf").setAttribute("aria-pressed", m === "pdf");
+    if (aktuell !== null) anzeigen(berichte[aktuell]);
+  }
+  function anzeigen(b) {
+    const pdf = modus === "pdf" && !!b.pdf;
+    $("modes").hidden = !b.pdf;
+    $("rahmen").hidden = pdf;
+    $("pdfView").hidden = !pdf;
+    if (!pdf) { $("teilen").hidden = true; pdfLauf++; return; }
+    $("pdfView").scrollTop = 0;
+    zeigePdf(b);
+  }
+  $("modusSeite").addEventListener("click", () => setzeModus("seite"));
+  $("modusPdf").addEventListener("click", () => setzeModus("pdf"));
+  $("teilen").addEventListener("click", async () => {
+    if (!pdfDatei) return;
+    try { await navigator.share({ files: [pdfDatei], title: pdfDatei.name }); } catch {}
+  });
+
   async function lesen(id, push) {
     const i = berichte.findIndex((b) => b.id === id);
     if (i < 0) return;
@@ -334,6 +424,9 @@ header.top > div { min-width: 0; }
     $("neuer").disabled = i === 0;
     $("aelter").disabled = i === berichte.length - 1;
     $("leser").hidden = false;
+    $("modusSeite").setAttribute("aria-pressed", modus === "seite");
+    $("modusPdf").setAttribute("aria-pressed", modus === "pdf");
+    anzeigen(b);
     if (push) history.pushState(null, "", "#" + id); else if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
     const rahmen = $("rahmen");
     rahmen.removeAttribute("src");
@@ -356,7 +449,8 @@ header.top > div { min-width: 0; }
   }
 
   function schliessen() {
-    $("leser").hidden = true; aktuell = null;
+    $("leser").hidden = true; aktuell = null; pdfLauf++;
+    $("pdfView").replaceChildren(); pdfDatei = null;
     $("rahmen").removeAttribute("src");
   }
   $("zurueck").addEventListener("click", () => { if (location.hash) history.back(); else schliessen(); });
