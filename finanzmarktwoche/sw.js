@@ -1,6 +1,6 @@
 /* Offline-Cache für die Finanzmarktwoche. App-Hülle aus dem Cache (im Hintergrund aktualisiert),
    Berichte (daten/) immer zuerst aus dem Netz, offline aus dem Cache. Version erhöhen, wenn sich die Dateiliste ändert. */
-const CACHE = "finanzmarktwoche-v4";
+const CACHE = "finanzmarktwoche-v5";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "vendor/pdf.min.js", "vendor/pdf.worker.min.js", "fonts/sofia-sans-condensed-latin-700-normal.woff2", "fonts/sofia-sans-condensed-latin-800-normal.woff2"];
 
 self.addEventListener("install", (e) => {
