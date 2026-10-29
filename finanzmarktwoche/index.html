@@ -427,9 +427,9 @@ header.top > div { min-width: 0; }
     $("modusSeite").setAttribute("aria-pressed", modus === "seite");
     $("modusPdf").setAttribute("aria-pressed", modus === "pdf");
     anzeigen(b);
-    if (push) history.pushState(null, "", "#" + id); else if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
-    const rahmen = $("rahmen");
-    rahmen.removeAttribute("src");
+    // Ohne Verlaufseinträge: Zurück schließt den Bericht direkt (iframe-Ladevorgänge landen sonst im Verlauf)
+    if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+    zeigeImRahmen(null);
     try {
       const box = await holeJson("daten/" + id + ".json");
       const { inhalt } = await entschluesseln(box);
@@ -439,27 +439,31 @@ header.top > div { min-width: 0; }
       let html = dokument(b, inhalt).replace(/<a\s+href="(https?:)/gi, '<a target="_blank" rel="noopener" href="$1');
       if (blobUrl) URL.revokeObjectURL(blobUrl);
       blobUrl = URL.createObjectURL(new Blob([html], { type: "text/html" }));
-      rahmen.src = blobUrl;
+      zeigeImRahmen(blobUrl);
       b._text = inhalt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 20000);
     } catch {
       if (aktuell !== i) return;
       const fehler = '<!doctype html><meta charset="utf-8"><body style="font:16px -apple-system,sans-serif;color:#5d6880;padding:40px 20px;text-align:center">Bericht konnte nicht geladen werden. Prüfe die Internetverbindung.</body>';
-      rahmen.src = URL.createObjectURL(new Blob([fehler], { type: "text/html" }));
+      zeigeImRahmen(URL.createObjectURL(new Blob([fehler], { type: "text/html" })));
     }
   }
 
+  // Jeder Bericht bekommt einen frischen Rahmen, damit kein Ladevorgang im Verlauf landet
+  function zeigeImRahmen(url) {
+    const alt = $("rahmen"), neu = alt.cloneNode(false);
+    neu.removeAttribute("src");
+    if (url) neu.src = url;
+    alt.replaceWith(neu);
+  }
   function schliessen() {
     $("leser").hidden = true; aktuell = null; pdfLauf++;
     $("pdfView").replaceChildren(); pdfDatei = null;
-    $("rahmen").removeAttribute("src");
+    zeigeImRahmen(null);
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
-  $("zurueck").addEventListener("click", () => { if (location.hash) history.back(); else schliessen(); });
+  $("zurueck").addEventListener("click", schliessen);
   $("neuer").addEventListener("click", () => { if (aktuell > 0) lesen(berichte[aktuell - 1].id, false); });
   $("aelter").addEventListener("click", () => { if (aktuell < berichte.length - 1) lesen(berichte[aktuell + 1].id, false); });
-  window.addEventListener("popstate", () => {
-    const h = location.hash.match(/^#(\d{4}-kw\d{2})$/);
-    if (h && key) lesen(h[1], false); else schliessen();
-  });
 
   // Beim Zurückkehren in die App neue Berichte holen
   document.addEventListener("visibilitychange", async () => {
