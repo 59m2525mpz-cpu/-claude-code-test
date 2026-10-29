@@ -1,0 +1,618 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-29T08:20:33+00:00",
+  "title": "Design System: Finanzmarktwoche",
+  "extensions": {
+    "colorMeta": {
+      "binder": {
+        "role": "primary",
+        "displayName": "Ordnerblau",
+        "canonical": "oklch(34.7% 0.073 257)",
+        "tonalRamp": [
+          "oklch(15% 0.018 257)",
+          "oklch(26% 0.027 257)",
+          "oklch(38% 0.045 257)",
+          "oklch(49% 0.064 257)",
+          "oklch(61% 0.064 257)",
+          "oklch(72% 0.045 257)",
+          "oklch(84% 0.027 257)",
+          "oklch(95% 0.018 257)"
+        ]
+      },
+      "binder-deep": {
+        "role": "primary",
+        "displayName": "Tiefes Ordnerblau",
+        "canonical": "oklch(29.6% 0.062 257)",
+        "tonalRamp": [
+          "oklch(15% 0.015 257)",
+          "oklch(26% 0.023 257)",
+          "oklch(38% 0.038 257)",
+          "oklch(49% 0.054 257)",
+          "oklch(61% 0.054 257)",
+          "oklch(72% 0.038 257)",
+          "oklch(84% 0.023 257)",
+          "oklch(95% 0.015 257)"
+        ]
+      },
+      "on-binder-muted": {
+        "role": "primary",
+        "displayName": "Etikettgrau auf Ordner",
+        "canonical": "oklch(83.4% 0.030 255)",
+        "tonalRamp": [
+          "oklch(15% 0.007 255)",
+          "oklch(26% 0.011 255)",
+          "oklch(38% 0.018 255)",
+          "oklch(49% 0.026 255)",
+          "oklch(61% 0.026 255)",
+          "oklch(72% 0.018 255)",
+          "oklch(84% 0.011 255)",
+          "oklch(95% 0.007 255)"
+        ]
+      },
+      "signal": {
+        "role": "secondary",
+        "displayName": "Signalgelb",
+        "canonical": "oklch(83.4% 0.158 89)",
+        "tonalRamp": [
+          "oklch(15% 0.040 89)",
+          "oklch(26% 0.058 89)",
+          "oklch(38% 0.098 89)",
+          "oklch(49% 0.138 89)",
+          "oklch(61% 0.138 89)",
+          "oklch(72% 0.098 89)",
+          "oklch(84% 0.058 89)",
+          "oklch(95% 0.040 89)"
+        ]
+      },
+      "signal-edge": {
+        "role": "secondary",
+        "displayName": "Signalgelb-Kante",
+        "canonical": "oklch(74.5% 0.149 87)",
+        "tonalRamp": [
+          "oklch(15% 0.037 87)",
+          "oklch(26% 0.054 87)",
+          "oklch(38% 0.092 87)",
+          "oklch(49% 0.130 87)",
+          "oklch(61% 0.130 87)",
+          "oklch(72% 0.092 87)",
+          "oklch(84% 0.054 87)",
+          "oklch(95% 0.037 87)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Pappgrau",
+        "canonical": "oklch(92.9% 0.008 254)",
+        "tonalRamp": [
+          "oklch(15% 0.002 254)",
+          "oklch(26% 0.003 254)",
+          "oklch(38% 0.005 254)",
+          "oklch(49% 0.007 254)",
+          "oklch(61% 0.007 254)",
+          "oklch(72% 0.005 254)",
+          "oklch(84% 0.003 254)",
+          "oklch(95% 0.002 254)"
+        ]
+      },
+      "fach": {
+        "role": "neutral",
+        "displayName": "Fachweiß",
+        "canonical": "oklch(97.6% 0.003 265)",
+        "tonalRamp": [
+          "oklch(15% 0.001 265)",
+          "oklch(26% 0.001 265)",
+          "oklch(38% 0.002 265)",
+          "oklch(49% 0.003 265)",
+          "oklch(61% 0.003 265)",
+          "oklch(72% 0.002 265)",
+          "oklch(84% 0.001 265)",
+          "oklch(95% 0.001 265)"
+        ]
+      },
+      "board": {
+        "role": "neutral",
+        "displayName": "Brettgrau",
+        "canonical": "oklch(83.9% 0.016 254)",
+        "tonalRamp": [
+          "oklch(15% 0.004 254)",
+          "oklch(26% 0.006 254)",
+          "oklch(38% 0.010 254)",
+          "oklch(49% 0.014 254)",
+          "oklch(61% 0.014 254)",
+          "oklch(72% 0.010 254)",
+          "oklch(84% 0.006 254)",
+          "oklch(95% 0.004 254)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Fugengrau",
+        "canonical": "oklch(91.1% 0.010 253)",
+        "tonalRamp": [
+          "oklch(15% 0.002 253)",
+          "oklch(26% 0.004 253)",
+          "oklch(38% 0.006 253)",
+          "oklch(49% 0.009 253)",
+          "oklch(61% 0.009 253)",
+          "oklch(72% 0.006 253)",
+          "oklch(84% 0.004 253)",
+          "oklch(95% 0.002 253)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinte",
+        "canonical": "oklch(24.2% 0.028 260)",
+        "tonalRamp": [
+          "oklch(15% 0.007 260)",
+          "oklch(26% 0.010 260)",
+          "oklch(38% 0.017 260)",
+          "oklch(49% 0.024 260)",
+          "oklch(61% 0.024 260)",
+          "oklch(72% 0.017 260)",
+          "oklch(84% 0.010 260)",
+          "oklch(95% 0.007 260)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Bleistiftgrau",
+        "canonical": "oklch(49.0% 0.032 260)",
+        "tonalRamp": [
+          "oklch(15% 0.008 260)",
+          "oklch(26% 0.012 260)",
+          "oklch(38% 0.020 260)",
+          "oklch(49% 0.028 260)",
+          "oklch(61% 0.028 260)",
+          "oklch(72% 0.020 260)",
+          "oklch(84% 0.012 260)",
+          "oklch(95% 0.008 260)"
+        ]
+      },
+      "label": {
+        "role": "neutral",
+        "displayName": "Etikettweiß",
+        "canonical": "oklch(100.0% 0.000 90)",
+        "tonalRamp": [
+          "oklch(15% 0.002 254)",
+          "oklch(26% 0.003 254)",
+          "oklch(38% 0.005 254)",
+          "oklch(49% 0.007 254)",
+          "oklch(61% 0.007 254)",
+          "oklch(72% 0.005 254)",
+          "oklch(84% 0.003 254)",
+          "oklch(95% 0.002 254)"
+        ]
+      },
+      "label-edge": {
+        "role": "neutral",
+        "displayName": "Etikettkante",
+        "canonical": "oklch(85.5% 0.015 255)",
+        "tonalRamp": [
+          "oklch(15% 0.004 255)",
+          "oklch(26% 0.005 255)",
+          "oklch(38% 0.009 255)",
+          "oklch(49% 0.013 255)",
+          "oklch(61% 0.013 255)",
+          "oklch(72% 0.009 255)",
+          "oklch(84% 0.005 255)",
+          "oklch(95% 0.004 255)"
+        ]
+      },
+      "label-ink": {
+        "role": "neutral",
+        "displayName": "Etikettschwarz",
+        "canonical": "oklch(20.8% 0.022 260)",
+        "tonalRamp": [
+          "oklch(15% 0.005 260)",
+          "oklch(26% 0.008 260)",
+          "oklch(38% 0.014 260)",
+          "oklch(49% 0.019 260)",
+          "oklch(61% 0.019 260)",
+          "oklch(72% 0.014 260)",
+          "oklch(84% 0.008 260)",
+          "oklch(95% 0.005 260)"
+        ]
+      },
+      "focus": {
+        "role": "status",
+        "displayName": "Fokusblau",
+        "canonical": "oklch(55.9% 0.174 260)",
+        "tonalRamp": [
+          "oklch(15% 0.044 260)",
+          "oklch(26% 0.064 260)",
+          "oklch(38% 0.108 260)",
+          "oklch(49% 0.152 260)",
+          "oklch(61% 0.152 260)",
+          "oklch(72% 0.108 260)",
+          "oklch(84% 0.064 260)",
+          "oklch(95% 0.044 260)"
+        ]
+      },
+      "danger": {
+        "role": "status",
+        "displayName": "Siegelrot",
+        "canonical": "oklch(50.2% 0.180 24)",
+        "tonalRamp": [
+          "oklch(15% 0.045 24)",
+          "oklch(26% 0.066 24)",
+          "oklch(38% 0.111 24)",
+          "oklch(49% 0.157 24)",
+          "oklch(61% 0.157 24)",
+          "oklch(72% 0.111 24)",
+          "oklch(84% 0.066 24)",
+          "oklch(95% 0.045 24)"
+        ]
+      },
+      "ground-dark": {
+        "role": "neutral",
+        "displayName": "Schiefer",
+        "canonical": "oklch(20.8% 0.026 261)",
+        "tonalRamp": [
+          "oklch(15% 0.007 261)",
+          "oklch(26% 0.010 261)",
+          "oklch(38% 0.016 261)",
+          "oklch(49% 0.023 261)",
+          "oklch(61% 0.023 261)",
+          "oklch(72% 0.016 261)",
+          "oklch(84% 0.010 261)",
+          "oklch(95% 0.007 261)"
+        ]
+      },
+      "fach-dark": {
+        "role": "neutral",
+        "displayName": "Schieferfach",
+        "canonical": "oklch(25.0% 0.028 258)",
+        "tonalRamp": [
+          "oklch(15% 0.007 258)",
+          "oklch(26% 0.010 258)",
+          "oklch(38% 0.017 258)",
+          "oklch(49% 0.024 258)",
+          "oklch(61% 0.024 258)",
+          "oklch(72% 0.017 258)",
+          "oklch(84% 0.010 258)",
+          "oklch(95% 0.007 258)"
+        ]
+      },
+      "board-dark": {
+        "role": "neutral",
+        "displayName": "Schieferbrett",
+        "canonical": "oklch(33.4% 0.034 259)",
+        "tonalRamp": [
+          "oklch(15% 0.008 259)",
+          "oklch(26% 0.012 259)",
+          "oklch(38% 0.021 259)",
+          "oklch(49% 0.029 259)",
+          "oklch(61% 0.029 259)",
+          "oklch(72% 0.021 259)",
+          "oklch(84% 0.012 259)",
+          "oklch(95% 0.008 259)"
+        ]
+      },
+      "label-dark": {
+        "role": "neutral",
+        "displayName": "Etikett hellgrau",
+        "canonical": "oklch(90.1% 0.013 256)",
+        "tonalRamp": [
+          "oklch(15% 0.003 256)",
+          "oklch(26% 0.005 256)",
+          "oklch(38% 0.008 256)",
+          "oklch(49% 0.011 256)",
+          "oklch(61% 0.011 256)",
+          "oklch(72% 0.008 256)",
+          "oklch(84% 0.005 256)",
+          "oklch(95% 0.003 256)"
+        ]
+      },
+      "signal-dark": {
+        "role": "secondary",
+        "displayName": "Signalgelb gedämpft",
+        "canonical": "oklch(77.7% 0.148 88)",
+        "tonalRamp": [
+          "oklch(15% 0.037 88)",
+          "oklch(26% 0.054 88)",
+          "oklch(38% 0.092 88)",
+          "oklch(49% 0.129 88)",
+          "oklch(61% 0.129 88)",
+          "oklch(72% 0.092 88)",
+          "oklch(84% 0.054 88)",
+          "oklch(95% 0.037 88)"
+        ]
+      },
+      "focus-dark": {
+        "role": "status",
+        "displayName": "Fokusblau hell",
+        "canonical": "oklch(72.6% 0.118 260)",
+        "tonalRamp": [
+          "oklch(15% 0.029 260)",
+          "oklch(26% 0.043 260)",
+          "oklch(38% 0.073 260)",
+          "oklch(49% 0.103 260)",
+          "oklch(61% 0.103 260)",
+          "oklch(72% 0.073 260)",
+          "oklch(84% 0.043 260)",
+          "oklch(95% 0.029 260)"
+        ]
+      },
+      "danger-dark": {
+        "role": "status",
+        "displayName": "Siegelrot hell",
+        "canonical": "oklch(76.5% 0.139 25)",
+        "tonalRamp": [
+          "oklch(15% 0.035 25)",
+          "oklch(26% 0.051 25)",
+          "oklch(38% 0.086 25)",
+          "oklch(49% 0.121 25)",
+          "oklch(61% 0.121 25)",
+          "oklch(72% 0.086 25)",
+          "oklch(84% 0.051 25)",
+          "oklch(95% 0.035 25)"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Tinte hell",
+        "canonical": "oklch(92.9% 0.011 257)",
+        "tonalRamp": [
+          "oklch(15% 0.003 257)",
+          "oklch(26% 0.004 257)",
+          "oklch(38% 0.007 257)",
+          "oklch(49% 0.010 257)",
+          "oklch(61% 0.010 257)",
+          "oklch(72% 0.007 257)",
+          "oklch(84% 0.004 257)",
+          "oklch(95% 0.003 257)"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Bleistiftgrau hell",
+        "canonical": "oklch(72.2% 0.030 258)",
+        "tonalRamp": [
+          "oklch(15% 0.007 258)",
+          "oklch(26% 0.011 258)",
+          "oklch(38% 0.018 258)",
+          "oklch(49% 0.026 258)",
+          "oklch(61% 0.026 258)",
+          "oklch(72% 0.018 258)",
+          "oklch(84% 0.011 258)",
+          "oklch(95% 0.007 258)"
+        ]
+      },
+      "binder-dark": {
+        "role": "primary",
+        "displayName": "Ordnerblau dunkel",
+        "canonical": "oklch(31.9% 0.062 257)",
+        "tonalRamp": [
+          "oklch(15% 0.016 257)",
+          "oklch(26% 0.023 257)",
+          "oklch(38% 0.039 257)",
+          "oklch(49% 0.055 257)",
+          "oklch(61% 0.055 257)",
+          "oklch(72% 0.039 257)",
+          "oklch(84% 0.023 257)",
+          "oklch(95% 0.016 257)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Name im Kopfband von Sperre und Archiv."
+      },
+      "label-numeral": {
+        "displayName": "Etikett-Ziffer",
+        "purpose": "Zweistellige KW auf dem Rückenschild; 37px auf der Sperre, 21px in der Leseleiste."
+      },
+      "label-kw": {
+        "displayName": "Etikett-KW",
+        "purpose": "Kleines „KW“ auf dem Schild, 70 % Deckkraft (80 % auf Signalgelb)."
+      },
+      "shelf-label": {
+        "displayName": "Bodenbeschriftung",
+        "purpose": "Monat und Jahr als h2 über jedem Regalboden, Versalien."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Wochentitel in der Archivzeile."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Grundtext der Hülle."
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "Kernaussage (zwei Zeilen), Bestandszeile, Jahresangabe."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Zeitraum über dem Titel."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Hauptknopf und Eingabefelder (17px verhindert iOS-Zoom)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "brettschatten",
+        "value": "0 8px 12px -6px rgba(18, 28, 45, .35)",
+        "purpose": "Unter dem Regalbrett jedes Monats."
+      },
+      {
+        "name": "blattschatten",
+        "value": "0 1px 3px rgba(18, 28, 45, .18)",
+        "purpose": "Unter jeder gerenderten PDF-Seite."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.22, 1, .36, 1)",
+        "purpose": "Standardkurve für Knopfdruck und Etikett-Übergang."
+      },
+      {
+        "name": "etikett-transition",
+        "value": "240ms",
+        "purpose": "View Transition: Schild gleitet zwischen Zeile und Leseleiste."
+      },
+      {
+        "name": "root-transition",
+        "value": "180ms",
+        "purpose": "Überblendung der restlichen Seite während der Signatur."
+      },
+      {
+        "name": "press",
+        "value": "120ms ease",
+        "purpose": "Tönung beim Drücken von Zeile und Leistenknöpfen."
+      },
+      {
+        "name": "control",
+        "value": "160ms",
+        "purpose": "Hauptknopf (Skalierung .98), Segmentwechsel, Sperr-Symbol."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "Bei prefers-reduced-motion entfallen Übergänge und View Transitions."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "column",
+        "value": "640px"
+      },
+      {
+        "name": "pdf-page-max",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Rückenschild",
+      "kind": "custom",
+      "refersTo": "etikett",
+      "description": "KW-Schild jeder Woche; Erkennungszeichen und Objekt der View-Transition-Signatur.",
+      "html": "<div class=\"ds-etikett\"><small>KW</small><b>42</b></div>",
+      "css": ".ds-etikett{display:inline-grid;justify-items:center;align-content:center;gap:1px;width:54px;height:62px;border-radius:7px;background:var(--label,#ffffff);color:var(--label-ink,#121822);border:1px solid var(--label-edge,#c9d0d9);font-family:var(--etikett, 'Sofia Sans Condensed', 'Arial Narrow', sans-serif);font-variant-numeric:tabular-nums;line-height:1}.ds-etikett small{font-size:12px;font-weight:700;letter-spacing:.08em;opacity:.7}.ds-etikett b{font-size:31px;font-weight:800;letter-spacing:-.01em}"
+    },
+    {
+      "name": "Rückenschild neueste Woche",
+      "kind": "custom",
+      "refersTo": "etikett-signal",
+      "description": "Einziger Einsatz von Signalgelb: das Schild der neuesten Woche.",
+      "html": "<div class=\"ds-etikett-signal\"><small>KW</small><b>43</b></div>",
+      "css": ".ds-etikett-signal{display:inline-grid;justify-items:center;align-content:center;gap:1px;width:54px;height:62px;border-radius:7px;background:var(--signal,#f2c230);color:var(--label-ink,#121822);border:1px solid var(--signal-edge,#d4a514);font-family:var(--etikett, 'Sofia Sans Condensed', 'Arial Narrow', sans-serif);font-variant-numeric:tabular-nums;line-height:1}.ds-etikett-signal small{font-size:12px;font-weight:700;letter-spacing:.08em;opacity:.8}.ds-etikett-signal b{font-size:31px;font-weight:800;letter-spacing:-.01em}"
+    },
+    {
+      "name": "Regalboden mit Archivzeile",
+      "kind": "card",
+      "refersTo": "archiv-zeile",
+      "description": "Monatsboden: Beschriftung, Fach mit ganzflächig antippbaren Zeilen, Brett mit weichem Schatten.",
+      "html": "<section class=\"ds-boden\"><h2>Oktober 2026</h2><div class=\"ds-fach\"><button class=\"ds-zeile\" type=\"button\"><span class=\"ds-schild\"><small>KW</small><b>42</b></span><span class=\"ds-txt\"><span class=\"ds-zeit\">12.10. bis 16.10.2026</span><span class=\"ds-titel\">Inflation bremst</span><span class=\"ds-kern\">US-Verbraucherpreise im September höher als erwartet.</span></span><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 6l6 6-6 6\"/></svg></button></div></section>",
+      "css": ".ds-boden{max-width:640px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif}.ds-boden h2{font:700 15px/1 var(--etikett, 'Sofia Sans Condensed', 'Arial Narrow', sans-serif);letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#566173);margin:0 4px 8px}.ds-fach{background:var(--fach,#f6f7f9);border-radius:6px 6px 0 0;overflow:hidden}.ds-boden::after{content:'';display:block;height:6px;margin:0 -6px;border-radius:1px;background:var(--board,#c3cbd5);box-shadow:0 8px 12px -6px rgba(18,28,45,.35)}.ds-zeile{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:12px;border:0;background:transparent;color:var(--muted,#566173);cursor:pointer;font:inherit;transition:background-color 120ms ease}.ds-zeile:active{background:rgba(31,58,95,.07)}.ds-zeile:focus-visible{outline:2px solid var(--focus,#2f6fd8);outline-offset:2px}.ds-schild{display:grid;justify-items:center;align-content:center;gap:1px;width:54px;height:62px;flex:none;border-radius:7px;background:var(--label,#fff);color:var(--label-ink,#121822);border:1px solid var(--label-edge,#c9d0d9);font-family:var(--etikett, 'Sofia Sans Condensed', 'Arial Narrow', sans-serif);line-height:1;font-variant-numeric:tabular-nums}.ds-schild small{font-size:12px;font-weight:700;letter-spacing:.08em;opacity:.7}.ds-schild b{font-size:31px;font-weight:800}.ds-txt{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.ds-zeit{font-size:13px;font-variant-numeric:tabular-nums}.ds-titel{font-size:16px;font-weight:600;line-height:1.3;color:var(--ink,#18202d)}.ds-kern{font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}"
+    },
+    {
+      "name": "Hauptknopf",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ordnerblauer Vollbreiten-Knopf, z. B. „Archiv öffnen“ auf der Sperre.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Archiv öffnen</button>",
+      "css": ".ds-btn-primary{width:100%;border:0;border-radius:10px;padding:14px;font:600 17px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;background:var(--binder,#1f3a5f);color:var(--on-binder,#fff);cursor:pointer;transition:transform 160ms cubic-bezier(.22,1,.36,1),background-color 160ms ease}.ds-btn-primary:hover{background:var(--binder-deep,#172d4b)}.ds-btn-primary:active{transform:scale(.98);background:var(--binder-deep,#172d4b)}.ds-btn-primary:focus-visible{outline:2px solid var(--focus,#2f6fd8);outline-offset:2px}.ds-btn-primary:disabled{opacity:.65}"
+    },
+    {
+      "name": "Suchfeld",
+      "kind": "input",
+      "refersTo": "input-feld",
+      "description": "Fachweißes Feld mit Brettgrau-Rand und Lupe; gleiche Form wie das Passwortfeld.",
+      "html": "<label class=\"ds-suche\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input type=\"search\" placeholder=\"Suchen: Fed, Öl, SAP, KW 41\" aria-label=\"Berichte durchsuchen\"></label>",
+      "css": ".ds-suche{position:relative;display:block;max-width:640px;color:var(--muted,#566173)}.ds-suche svg{position:absolute;left:12px;top:50%;translate:0 -50%;pointer-events:none}.ds-suche input{width:100%;box-sizing:border-box;font:17px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;padding:13px 14px 13px 38px;border-radius:10px;border:1px solid var(--board,#c3cbd5);background:var(--fach,#f6f7f9);color:var(--ink,#18202d);caret-color:var(--binder,#1f3a5f)}.ds-suche input::placeholder{color:var(--muted,#566173)}.ds-suche input:focus-visible{outline:2px solid var(--focus,#2f6fd8);outline-offset:2px}"
+    },
+    {
+      "name": "Kopfband",
+      "kind": "nav",
+      "refersTo": "kopfband",
+      "description": "Ordnerblaues Band mit Name in Etikettschrift, Bestandszeile und Sperr-Symbol.",
+      "html": "<header class=\"ds-band\"><div><h1>Finanzmarktwoche</h1><div class=\"ds-bestand\">3 Berichte · zuletzt KW 43/2026</div></div><button class=\"ds-symbol\" type=\"button\" aria-label=\"Archiv sperren\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2\"/><path d=\"M8 11V8a4 4 0 0 1 8 0v3\"/></svg></button></header>",
+      "css": ".ds-band{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;background:var(--binder,#1f3a5f);color:var(--on-binder,#fff);padding:20px 16px 18px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif}.ds-band h1{font:800 32px/1 var(--etikett, 'Sofia Sans Condensed', 'Arial Narrow', sans-serif);letter-spacing:.005em;margin:0}.ds-bestand{color:var(--on-binder-muted,#bccadc);font-size:14px;margin-top:6px;font-variant-numeric:tabular-nums}.ds-symbol{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.1);border:0;color:inherit;cursor:pointer;transition:background-color 160ms ease}.ds-symbol:hover,.ds-symbol:active{background:rgba(255,255,255,.2)}.ds-symbol:focus-visible{outline:2px solid var(--focus,#2f6fd8);outline-offset:2px}"
+    },
+    {
+      "name": "Umschalter Seite/PDF",
+      "kind": "chip",
+      "refersTo": "segment-aktiv",
+      "description": "Segmentgruppe in der Modusleiste; das aktive Segment ist ein kleines Etikett.",
+      "html": "<div class=\"ds-modi\"><div class=\"ds-seg\" role=\"group\" aria-label=\"Ansicht\"><button type=\"button\" aria-pressed=\"true\">Seite</button><button type=\"button\" aria-pressed=\"false\">PDF</button></div></div>",
+      "css": ".ds-modi{background:var(--binder,#1f3a5f);padding:10px 12px;display:flex;justify-content:center;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif}.ds-seg{display:inline-flex;background:rgba(255,255,255,.12);border-radius:9px;padding:2px}.ds-seg button{border:0;background:transparent;color:var(--on-binder,#fff);font:600 14px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;padding:6px 18px;border-radius:7px;cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-seg button:hover{background:rgba(255,255,255,.08)}.ds-seg button[aria-pressed=true]{background:var(--label,#fff);color:var(--label-ink,#121822)}.ds-seg button:focus-visible{outline:2px solid var(--focus,#2f6fd8);outline-offset:2px}"
+    },
+    {
+      "name": "Leseleiste",
+      "kind": "nav",
+      "refersTo": "leseleiste",
+      "description": "Dreispaltige Leiste im Bericht: Zurück, waagerechtes Schild mit Jahr, Blättern.",
+      "html": "<div class=\"ds-leiste\"><button class=\"ds-zurueck\" type=\"button\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M15 6l-6 6 6 6\"/></svg>Archiv</button><div class=\"ds-wo\"><span class=\"ds-wo-schild\"><small>KW</small><b>43</b></span><span>2026</span></div><div class=\"ds-blaettern\"><button type=\"button\" aria-label=\"Neuere Woche\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M6 15l6-6 6 6\"/></svg></button><button type=\"button\" aria-label=\"Ältere Woche\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M6 9l6 6 6-6\"/></svg></button></div></div>",
+      "css": ".ds-leiste{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:6px 8px 8px;background:var(--binder,#1f3a5f);color:var(--on-binder,#fff);font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif}.ds-leiste button{border:0;background:transparent;color:inherit;border-radius:9px;cursor:pointer;transition:background-color 120ms ease}.ds-leiste button:hover,.ds-leiste button:active{background:rgba(255,255,255,.14)}.ds-leiste button:focus-visible{outline:2px solid var(--focus,#2f6fd8);outline-offset:2px}.ds-zurueck{justify-self:start;display:inline-flex;align-items:center;gap:2px;padding:9px 10px 9px 4px;font:600 16px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif}.ds-wo{display:flex;align-items:center;gap:8px}.ds-wo>span:last-child{color:var(--on-binder-muted,#bccadc);font-size:14px;font-variant-numeric:tabular-nums}.ds-wo-schild{display:inline-grid;grid-auto-flow:column;align-items:center;gap:5px;height:30px;padding:0 8px;border-radius:6px;background:var(--signal,#f2c230);color:var(--label-ink,#121822);border:1px solid var(--signal-edge,#d4a514);font-family:var(--etikett, 'Sofia Sans Condensed', 'Arial Narrow', sans-serif);line-height:1}.ds-wo-schild small{font-size:11px;font-weight:700;letter-spacing:.08em;opacity:.8}.ds-wo-schild b{font-size:21px;font-weight:800}.ds-blaettern{justify-self:end;display:flex}.ds-blaettern button{display:inline-grid;place-items:center;width:40px;height:40px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Das Archivregal",
+    "overview": "Die App ist ein Büroarchiv in der Hosentasche: Jede Woche steht als Ordner im Regal, mit einem weißen Rückenschild, auf dem in schwarzer Normschrift die Kalenderwoche steht. Jeder Monat bekommt einen eigenen Regalboden. Ordnerblau trägt den Kopf und die Leseleiste, kühles Pappgrau ist der Grund, und nur das Schild der neuesten Woche ist signalgelb. Das System ist ruhig, ernst und sachlich, aber nicht steril; es ist die Ordnung einer gut geführten Registratur, nicht die eines Handelsterminals.\n\nDie Dichte ist niedrig: pro Woche ein Schild, ein Zeitraum, ein Titel, höchstens zwei Zeilen Kernaussage. Die Hülle tritt zurück, sobald gelesen wird. Der Bericht bringt sein eigenes helles Layout mit und wird auf weißem Blatt gezeigt; die App gestaltet nur Rahmen, Leiste und Wege dorthin.\n\nDie einzige Bewegung mit Charakter ist die Signatur: Beim Öffnen gleitet das Etikett der angetippten Woche per View Transition aus der Zeile in die Leseleiste und beim Zurückkehren wieder an seinen Platz. Alles andere reagiert knapp und ohne Schmuck.",
+    "keyCharacteristics": [
+      "Ordnerblaues Kopfband und ordnerblaue Leseleiste als feste Klammer der App, auch unter der Statusleiste.",
+      "Weiße Rückenschilder mit großer Normschrift-Ziffer (Sofia Sans Condensed) als Erkennungszeichen jeder Woche.",
+      "Signalgelb ausschließlich für das Schild der neuesten Woche.",
+      "Regalboden als kräftige graue Linie mit weichem Schatten darunter; sonst flach.",
+      "UI-Text in der Systemschrift; die Etikettschrift bleibt Schildern, Kopf und Bodenbeschriftung vorbehalten.",
+      "Dunkel: tiefes Schiefer statt Schwarz, hellgraue Schilder, kein Neon."
+    ],
+    "rules": [
+      {
+        "name": "The Ein-Signal Rule",
+        "body": "Signalgelb markiert genau ein Schild: die neueste Woche. Kein Knopf, kein Hinweis, kein Status bekommt Gelb.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ordnerklammer Rule",
+        "body": "Ordnerblau ist Fläche, nicht Text. Es füllt Band, Leiste und Hauptknopf; Links und Akzenttexte werden daraus nicht gefärbt.",
+        "section": "colors"
+      },
+      {
+        "name": "The Schiefer-statt-Schwarz Rule",
+        "body": "Das dunkle Erscheinungsbild bleibt blaugrau und gedämpft; kein reines Schwarz, keine leuchtenden Akzente.",
+        "section": "colors"
+      },
+      {
+        "name": "The Schildschrift Rule",
+        "body": "Die Etikettschrift erscheint nur auf Schildern, im Namen des Kopfbands und in der Bodenbeschriftung. Titel, Texte, Knöpfe und Felder stehen in der Systemschrift.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ziffern-Stehen Rule",
+        "body": "Jede Zahl, die verglichen wird (KW, Zeiträume, Bestand), steht in tabellarischen Ziffern, damit die Schilder im Regal bündig wirken.",
+        "section": "typography"
+      },
+      {
+        "name": "The Brett-trägt Rule",
+        "body": "Schatten gibt es nur dort, wo im Archiv etwas aufliegt: Brett und Blatt. Zeilen, Fächer, Felder und Knöpfe bleiben flach.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** jede Woche mit einem Rückenschild zeigen: „KW“ klein, Ziffer zweistellig, Etikettschrift 800, tabellarisch.",
+      "**Do** Signalgelb nur auf das Schild der neuesten Woche legen (The Ein-Signal Rule).",
+      "**Do** Wochen nach Monat auf Regalböden gruppieren: Bodenbeschriftung, Fach mit 1px-Fugen, Brett mit Brettschatten.",
+      "**Do** Kopfband und Leseleiste ordnerblau halten, auch unter der Statusleiste.",
+      "**Do** die ganze Zeile als Schaltfläche bauen; das Chevron ist Hinweis, nicht Ziel.",
+      "**Do** neue Ansichten an die Signatur anbinden: das Schild ist das Objekt, das zwischen Archiv und Bericht wandert, und es respektiert reduzierte Bewegung.",
+      "**Do** im Dunkeln auf Schiefer (`ground-dark`) und hellgraue Schilder wechseln."
+    ],
+    "donts": [
+      "**Don't** Wochen als einzeln schwebende Karten mit eigenem Schatten darstellen; Zeilen teilen sich ein Fach.",
+      "**Don't** Schatten außer Brett und Blatt einsetzen (The Brett-trägt Rule).",
+      "**Don't** die Etikettschrift für Titel, Fließtext oder Knöpfe verwenden (The Schildschrift Rule).",
+      "**Don't** Gelb, Rot oder Blau für Kursbewegungen, Status oder Kennzahlen einführen; die App zeigt keine eigenen Zahlen.",
+      "**Don't** reines Schwarz, Neon oder leuchtende Akzente im dunklen Erscheinungsbild.",
+      "**Don't** den Bericht einfärben oder in das dunkle Schema zwingen; das Leseblatt bleibt weiß."
+    ]
+  }
+}
